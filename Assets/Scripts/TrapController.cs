@@ -40,8 +40,15 @@ public class TrapController : MonoBehaviour
             SwitchTrap(1);
         }
 
-
-
+        if (controllableTraps.Count > 0)
+        {
+            MoveTrap(currentTrapIndex);
+            // Press Shift to use the trap's skill
+            if (Input.GetKeyDown(KeyCode.RightShift))
+            {
+                controllableTraps[currentTrapIndex].UseSkill();
+            }
+        }
     }
     void SwitchTrap(int direction)
     {
@@ -60,5 +67,29 @@ public class TrapController : MonoBehaviour
     {
         Debug.Log($"Trap {controllableTraps[index].name} is deselected.");
         // add visual change
+    }
+
+    void MoveTrap(int index)
+    {
+        Vector2 moveDirection = Vector2.zero;
+
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            moveDirection.x = -1; // left
+        }
+        else if (Input.GetKey(KeyCode.RightArrow))
+        {
+            moveDirection.x = 1; // right
+        }
+
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            moveDirection.y = 1; // Move up
+        }
+        else if (Input.GetKey(KeyCode.DownArrow))
+        {
+            moveDirection.y = -1; // Move down
+        }
+        controllableTraps[index].Move(moveDirection);
     }
 }

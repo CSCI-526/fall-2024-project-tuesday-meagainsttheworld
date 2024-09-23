@@ -25,8 +25,11 @@ public class TrapExpandableHorizontal : Trap
     }
     public override void Move(Vector2 direction)
     {
+        Debug.Log($"Trap {name} move input: {direction}");
         Vector2 dirX = new Vector2(direction.x, 0);
         transform.Translate(dirX * Time.deltaTime * moveSpeed);
+        // transform.Translate(dirX);
+
     }
 
 }
