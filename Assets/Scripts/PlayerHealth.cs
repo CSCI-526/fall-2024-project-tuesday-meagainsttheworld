@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
     public GameObject corpsePrefab;
     public Transform respawnPoint;
     private Rigidbody2D playerRb;
+    public int life = 3;
+    public TextMeshProUGUI lifeText;
 
     // Start is called before the first frame update
     void Start()
@@ -23,7 +28,7 @@ public class PlayerHealth : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         if(other.gameObject.CompareTag("Traps")){
-            Die();
+            Die();            
         }
     }
 
@@ -40,5 +45,7 @@ public class PlayerHealth : MonoBehaviour
     playerRb.velocity = Vector2.zero;
 
     // DecreaseLife();
+    life--;
+    lifeText.text = "Lives: " + life;
     }
 }
