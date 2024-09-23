@@ -9,6 +9,8 @@ public class TrapExpandableHorizontal : Trap
     {
         isControllable = true;
         isDangerous = true;
+        moveHorizontally = true;
+        originalScale = transform.localScale;
     }
 
     // // Update is called once per frame
@@ -17,19 +19,16 @@ public class TrapExpandableHorizontal : Trap
 
     // }
 
-    public override void UseSkill()
+    public override void ActivateSkill()
     {
-        Debug.Log($"Trap {name} uses its skill: expand horizontally");
-        // transform.
-
+        Debug.Log($"Trap {name} activates its skill: expand horizontally");
+        ExpandHorizontally();
     }
-    public override void Move(Vector2 direction)
-    {
-        Debug.Log($"Trap {name} move input: {direction}");
-        Vector2 dirX = new Vector2(direction.x, 0);
-        transform.Translate(dirX * Time.deltaTime * moveSpeed);
-        // transform.Translate(dirX);
 
+    public override void DeactivateSkill()
+    {
+        Debug.Log($"Trap {name} deactivates its skill: expand horizontally");
+        Collapse();
     }
 
 }
