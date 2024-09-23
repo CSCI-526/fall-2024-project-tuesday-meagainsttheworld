@@ -4,8 +4,8 @@ using UnityEngine;
 
 public abstract class Trap : MonoBehaviour
 {
-    public bool isDangerous = true;
-    public bool isControllable = false;
+    // public bool isDangerous = true;
+    // public bool isControllable = false;
 
     public bool moveHorizontally = false;
     public bool moveVertically = false;

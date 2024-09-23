@@ -4,23 +4,24 @@ using UnityEngine;
 
 public class TrapController : MonoBehaviour
 {
-    public List<Trap> controllableTraps = new List<Trap>();
+    public List<Trap> traps = new List<Trap>();
 
     private int currentTrapIndex = 0;
 
     // Start is called before the first frame update
     void Start()
     {
-        Trap[] allTraps = FindObjectsOfType<Trap>();
-        // Get only the controllable traps
-        foreach (Trap trap in allTraps)
-        {
-            if (trap.isControllable)
-            {
-                controllableTraps.Add(trap);
-            }
-        }
-        if (controllableTraps.Count > 0)
+        // Trap[] allTraps = FindObjectsOfType<Trap>();
+        // // Get only the controllable traps
+        // foreach (Trap trap in allTraps)
+        // {
+        //     if (trap.isControllable)
+        //     {
+        //         controllableTraps.Add(trap);
+        //     }
+        // }
+        traps.AddRange(FindObjectsOfType<Trap>());
+        if (traps.Count > 0)
         {
             SelectTrap(0);
         }
@@ -40,36 +41,36 @@ public class TrapController : MonoBehaviour
             SwitchTrap(1);
         }
 
-        if (controllableTraps.Count > 0)
+        if (traps.Count > 0)
         {
             MoveTrap(currentTrapIndex);
             // Press Shift to use the trap's skill
             if (Input.GetKey(KeyCode.RightShift))
             {
-                controllableTraps[currentTrapIndex].ActivateSkill();
+                traps[currentTrapIndex].ActivateSkill();
             }
             else
             {
-                controllableTraps[currentTrapIndex].DeactivateSkill();
+                traps[currentTrapIndex].DeactivateSkill();
             }
         }
     }
     void SwitchTrap(int direction)
     {
         DeselectTrap(currentTrapIndex);
-        currentTrapIndex = (currentTrapIndex + direction + controllableTraps.Count) % controllableTraps.Count;
+        currentTrapIndex = (currentTrapIndex + direction + traps.Count) % traps.Count;
         SelectTrap(currentTrapIndex);
     }
 
     void SelectTrap(int index)
     {
-        Debug.Log($"Trap {controllableTraps[index].name} is selected.");
+        Debug.Log($"Trap {traps[index].name} is selected.");
         // add visual change
     }
 
     void DeselectTrap(int index)
     {
-        Debug.Log($"Trap {controllableTraps[index].name} is deselected.");
+        Debug.Log($"Trap {traps[index].name} is deselected.");
         // add visual change
     }
 
@@ -94,6 +95,6 @@ public class TrapController : MonoBehaviour
         {
             moveDirection.y = -1; // Move down
         }
-        controllableTraps[index].Move(moveDirection);
+        traps[index].Move(moveDirection);
     }
 }
