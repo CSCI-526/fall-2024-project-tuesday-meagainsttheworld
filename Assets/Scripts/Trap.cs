@@ -8,8 +8,11 @@ public abstract class Trap : MonoBehaviour
     // public bool isControllable = false;
 
     public bool moveHorizontally = false;
+    public float leftBoundary = -5f;
+    public float rightBoundary = 5f;
     public bool moveVertically = false;
-
+    public float downBoundary = -5f;
+    public float upBoundary = 5f;
     public float moveSpeed = 10.0f;
     protected Vector3 originalScale;
     protected bool hasTransformed = false;
@@ -31,6 +34,11 @@ public abstract class Trap : MonoBehaviour
         {
             Debug.Log($"Trap {name} moving: {actualDir}");
             transform.Translate(actualDir * Time.deltaTime * moveSpeed);
+            // limit to within the boundaries
+            Vector3 clampedPosition = transform.localPosition;
+            clampedPosition.x = Mathf.Clamp(clampedPosition.x, leftBoundary, rightBoundary);
+            clampedPosition.y = Mathf.Clamp(clampedPosition.y, downBoundary, upBoundary);
+            transform.localPosition = clampedPosition;
         }
     }
     protected void ExpandHorizontally(float n = 2)

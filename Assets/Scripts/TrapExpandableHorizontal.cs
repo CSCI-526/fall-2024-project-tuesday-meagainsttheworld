@@ -7,9 +7,7 @@ public class TrapExpandableHorizontal : Trap
     // Start is called before the first frame update
     void Start()
     {
-        // isControllable = true;
-        // isDangerous = true;
-        moveHorizontally = true;
+        // moveHorizontally = true;
         originalScale = transform.localScale;
     }
 
