@@ -51,7 +51,7 @@ public class TrapController : MonoBehaviour
             // Press Shift to use the trap's skill
             if (Input.GetKey(KeyCode.RightShift))
             {
-                traps[currentTrapIndex].ActivateSkill();
+                traps[currentTrapIndex].ActivateSkillTimed();
             }
             else
             {

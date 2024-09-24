@@ -14,6 +14,8 @@ public abstract class Trap : MonoBehaviour
     public float upLimit = 5f;
     public float downLimit = 5f;
     public float moveSpeed = 10.0f;
+    public float timeLimit = 3.0f;
+    protected float timeUsed = 0f;
     protected Vector3 originalScale;
     protected Vector3 startingPosition;
     protected bool hasTransformed = false;
@@ -48,6 +50,28 @@ public abstract class Trap : MonoBehaviour
             transform.localPosition = clampedPosition;
         }
     }
+
+    public void ActivateSkillTimed()
+    {
+        Debug.Log("Skill deactivated.");
+        if (timeUsed < timeLimit)
+        {
+            ActivateSkill();
+            timeUsed += Time.deltaTime;
+            // If accumulated time reaches max duration, deactivate skill
+            if (timeUsed >= timeLimit)
+            {
+                Debug.Log($"Time limit of {timeLimit} sec is used up. Deactivate skill.");
+                DeactivateSkill();
+            }
+        }
+        else
+        {
+            Debug.Log($"Time limit of {timeLimit} sec is used up. Cannot use skill.");
+        }
+    }
+
+    // skills and restoration
     protected void ExpandHorizontally(float n = 2)
     {
         if (!hasTransformed)
