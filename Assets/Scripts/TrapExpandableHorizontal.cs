@@ -8,7 +8,7 @@ public class TrapExpandableHorizontal : Trap
     public override void ActivateSkill()
     {
         Debug.Log($"Trap {name} activates its skill: expand horizontally");
-        ExpandHorizontally();
+        ExpandHorizontally(1.5f);
     }
 
     public override void DeactivateSkill()
