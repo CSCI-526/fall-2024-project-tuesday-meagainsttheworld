@@ -66,6 +66,7 @@ public class TrapController : MonoBehaviour
     {
         Debug.Log($"Trap {traps[index].name} is selected.");
         // add visual change
+
     }
 
     void DeselectTrap(int index)

@@ -41,7 +41,7 @@ public abstract class Trap : MonoBehaviour
         {
             Debug.Log($"Trap {name} moving: {actualDir}");
             transform.Translate(actualDir * Time.deltaTime * moveSpeed);
-            // limit to within the boundaries
+            // limit the movement
             Vector3 clampedPosition = transform.localPosition;
             clampedPosition.x = Mathf.Clamp(clampedPosition.x, startingPosition.x - leftLimit, startingPosition.x + rightLimit);
             clampedPosition.y = Mathf.Clamp(clampedPosition.y, startingPosition.y - downLimit, startingPosition.y + upLimit);
