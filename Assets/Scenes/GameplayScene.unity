@@ -1535,6 +1535,7 @@ MonoBehaviour:
   traps:
   - {fileID: 1078873932}
   - {fileID: 1407419609}
+  selectedColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!4 &1319341231
 Transform:
   m_ObjectHideFlags: 0
@@ -1744,7 +1745,7 @@ Transform:
   m_GameObject: {fileID: 1407419604}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.07, y: 0.69, z: 0}
+  m_LocalPosition: {x: 2.65, y: -1.89, z: 0}
   m_LocalScale: {x: 3, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1860,8 +1861,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 221275533
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 0.6839622, b: 0.6839622, a: 1}
@@ -1883,13 +1884,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1407419604}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48b4c060663d14c7e996a45764166e2b, type: 3}
+  m_Script: {fileID: 11500000, guid: cf65e1b07424c4ac2b04d1ea7e46767b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   moveHorizontally: 0
   leftLimit: 5
   rightLimit: 5
-  moveVertically: 1
+  moveVertically: 0
   upLimit: 5
   downLimit: 5
   moveSpeed: 10

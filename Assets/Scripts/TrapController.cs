@@ -8,6 +8,10 @@ public class TrapController : MonoBehaviour
 
     private int currentTrapIndex = 0;
 
+    private Renderer trapRenderer;
+    public Color selectedColor = Color.red;
+    private Color originalColor;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -66,6 +70,9 @@ public class TrapController : MonoBehaviour
     {
         Debug.Log($"Trap {traps[index].name} is selected.");
         // add visual change
+        trapRenderer = traps[index].GetComponent<Renderer>();
+        originalColor = trapRenderer.material.color;
+        trapRenderer.material.color = selectedColor;
 
     }
 
@@ -73,6 +80,7 @@ public class TrapController : MonoBehaviour
     {
         Debug.Log($"Trap {traps[index].name} is deselected.");
         // add visual change
+        trapRenderer.material.color = originalColor;
     }
 
     void MoveTrap(int index)
