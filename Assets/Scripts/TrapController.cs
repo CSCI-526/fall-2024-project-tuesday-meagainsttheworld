@@ -20,7 +20,7 @@ public class TrapController : MonoBehaviour
         //         controllableTraps.Add(trap);
         //     }
         // }
-        traps.AddRange(FindObjectsOfType<Trap>());
+        // traps.AddRange(FindObjectsOfType<Trap>());
         if (traps.Count > 0)
         {
             SelectTrap(0);

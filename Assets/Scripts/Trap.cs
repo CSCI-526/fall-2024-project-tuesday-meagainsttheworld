@@ -69,5 +69,13 @@ public abstract class Trap : MonoBehaviour
         }
     }
 
+    protected void Disappear()
+    {
+        gameObject.SetActive(false);
+    }
 
+    protected void Reappear()
+    {
+        gameObject.SetActive(true);
+    }
 }

@@ -4,18 +4,6 @@ using UnityEngine;
 
 public class TrapExpandableHorizontal : Trap
 {
-    // Start is called before the first frame update
-    // void Start()
-    // {
-    //     originalScale = transform.localScale;
-    //     startingPosition = transform.position;
-    // }
-
-    // // Update is called once per frame
-    // void Update()
-    // {
-
-    // }
 
     public override void ActivateSkill()
     {
@@ -25,7 +13,7 @@ public class TrapExpandableHorizontal : Trap
 
     public override void DeactivateSkill()
     {
-        Debug.Log($"Trap {name} deactivates its skill: expand horizontally");
+        Debug.Log($"Trap {name} deactivates its skill: collapse to original size");
         Collapse();
     }
 

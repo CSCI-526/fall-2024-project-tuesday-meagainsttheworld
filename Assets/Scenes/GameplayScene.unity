@@ -1205,8 +1205,8 @@ GameObject:
   - component: {fileID: 1078873929}
   - component: {fileID: 1078873932}
   m_Layer: 0
-  m_Name: Trap2
-  m_TagString: Ground
+  m_Name: Trap1
+  m_TagString: Traps
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1532,7 +1532,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9de0d287fc2504b28a3acf5b0af61906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  traps: []
+  traps:
+  - {fileID: 1078873932}
+  - {fileID: 1407419609}
 --- !u!4 &1319341231
 Transform:
   m_ObjectHideFlags: 0
@@ -1725,8 +1727,9 @@ GameObject:
   - component: {fileID: 1407419608}
   - component: {fileID: 1407419607}
   - component: {fileID: 1407419606}
+  - component: {fileID: 1407419609}
   m_Layer: 0
-  m_Name: Trap2 (1)
+  m_Name: Trap2
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1861,7 +1864,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.6839622, b: 0.6839622, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1871,6 +1874,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1407419609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407419604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48b4c060663d14c7e996a45764166e2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveHorizontally: 0
+  leftLimit: 5
+  rightLimit: 5
+  moveVertically: 1
+  upLimit: 5
+  downLimit: 5
+  moveSpeed: 10
 --- !u!4 &1456219191 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2143428582859789360, guid: 7831cc179b31a894da06c7bdde42dc2d, type: 3}
