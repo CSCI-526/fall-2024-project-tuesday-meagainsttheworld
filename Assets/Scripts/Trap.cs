@@ -8,16 +8,23 @@ public abstract class Trap : MonoBehaviour
     // public bool isControllable = false;
 
     public bool moveHorizontally = false;
-    public float leftBoundary = -5f;
-    public float rightBoundary = 5f;
+    public float leftLimit = 5f;
+    public float rightLimit = 5f;
     public bool moveVertically = false;
-    public float downBoundary = -5f;
-    public float upBoundary = 5f;
+    public float upLimit = 5f;
+    public float downLimit = 5f;
     public float moveSpeed = 10.0f;
     protected Vector3 originalScale;
+    protected Vector3 startingPosition;
     protected bool hasTransformed = false;
     public abstract void ActivateSkill();
     public abstract void DeactivateSkill();
+
+    protected void Start()
+    {
+        originalScale = transform.localScale;
+        startingPosition = transform.position;
+    }
     public void Move(Vector2 direction)
     {
         Vector2 actualDir = direction;
@@ -36,8 +43,8 @@ public abstract class Trap : MonoBehaviour
             transform.Translate(actualDir * Time.deltaTime * moveSpeed);
             // limit to within the boundaries
             Vector3 clampedPosition = transform.localPosition;
-            clampedPosition.x = Mathf.Clamp(clampedPosition.x, leftBoundary, rightBoundary);
-            clampedPosition.y = Mathf.Clamp(clampedPosition.y, downBoundary, upBoundary);
+            clampedPosition.x = Mathf.Clamp(clampedPosition.x, startingPosition.x - leftLimit, startingPosition.x + rightLimit);
+            clampedPosition.y = Mathf.Clamp(clampedPosition.y, startingPosition.y - downLimit, startingPosition.y + upLimit);
             transform.localPosition = clampedPosition;
         }
     }

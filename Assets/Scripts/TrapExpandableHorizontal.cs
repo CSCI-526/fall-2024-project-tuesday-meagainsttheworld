@@ -5,11 +5,11 @@ using UnityEngine;
 public class TrapExpandableHorizontal : Trap
 {
     // Start is called before the first frame update
-    void Start()
-    {
-        // moveHorizontally = true;
-        originalScale = transform.localScale;
-    }
+    // void Start()
+    // {
+    //     originalScale = transform.localScale;
+    //     startingPosition = transform.position;
+    // }
 
     // // Update is called once per frame
     // void Update()
