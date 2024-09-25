@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
 {
     public GameObject titleScreen;
     public TextMeshProUGUI lifeText;
+    public TextMeshProUGUI scoreText;
     //public TextMeshProUGUI TrapsText;
     public TextMeshProUGUI WinText;
     public static int playerLives = 3;       // Starting lives for "Me"
@@ -17,11 +18,22 @@ public class GameManager : MonoBehaviour
     public bool isMeWinner = false;   // Track if "Me" wins
     public bool isWorldWinner = false; // Track if "World" wins
     private bool hasWon = false; //Track if "Me" has already won
+    public bool isGameActive = false; // Track if the game has started
+    public int meScore { get; private set; } = 0;
+    public int worldScore { get; private set; } = 0;
     public string flagTag = "Flag";    // Tag for the right wall finish
 
     // Start is called before the first frame update
     void Start()
     {
+        if (scoreText == null)
+        {
+            scoreText = GameObject.Find("Score Text").GetComponent<TextMeshProUGUI>(); 
+            // Ensure "ScoreText" matches the name of your Text object in the hierarchy
+        }
+        // Hide the life and score text at the start
+        lifeText.gameObject.SetActive(false); 
+        scoreText.gameObject.SetActive(false);
         if (!hasGameReset)
         {
             playerLives = 3;  // Reset to initial lives
@@ -35,6 +47,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!isGameActive) return; // Don't update if the game hasn't started
         if (playerLives <= 0 && !hasWon)
         {
             WorldWins();
@@ -43,8 +56,14 @@ public class GameManager : MonoBehaviour
 
     public void StartGame(){
         titleScreen.gameObject.SetActive(false);
+        isGameActive = true; // Set game to active
+        // Show Lives and Score texts after pressing play
+        lifeText.gameObject.SetActive(true); 
+        scoreText.gameObject.SetActive(true);
         lifeText.text = "Lives: " + playerLives;
-        //also need traps number here !
+        scoreText.text = $"Score: <color=blue>0</color> | <color=red>0</color>";
+        WinText.gameObject.SetActive(false); // Hide any Win text from previous runs
+        
     }
 
     public void MeWins()
@@ -52,8 +71,10 @@ public class GameManager : MonoBehaviour
         if (hasWon) return; // Prevent multiple calls
         hasWon = true; // Set the flag
         isMeWinner = true;
-        playerLives++; // Reward 1 extra life
-        Debug.Log("Me wins! Extra life granted. Current lives: " + playerLives);
+        //playerLives++; // Reward 1 extra life
+        meScore++;
+        Debug.Log("Me wins! Me's Score: "+ meScore);
+        UpdateScoreboardUI();
         WinText.gameObject.SetActive(true);
         WinText.text = "Me Wins!";
         
@@ -67,7 +88,9 @@ public class GameManager : MonoBehaviour
         hasWon = true; // Set the flag
         isWorldWinner = true;
         //trapCount++; // Reward an extra trap
-        Debug.Log("World wins!");
+        worldScore++;
+        Debug.Log("World wins! World's Score: "+ worldScore);
+        UpdateScoreboardUI();
         PlayerController playerController = FindObjectOfType<PlayerController>();
         if (playerController != null)
         {
@@ -95,13 +118,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // You can call this function whenever the level transitions to update traps
-    public void UpdateTrapCount()
-    {
-        //trapManager.SetTrapCount(trapCount); // Assume trap manager sets traps
-        //Debug.Log("Traps updated to: " + trapCount);
-    }
-
     // Detect when "Me" reaches the right wall (finish line)
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -113,5 +129,8 @@ public class GameManager : MonoBehaviour
             MeWins(); // Player reached the right wall (finish)
         }
     }
-
+    private void UpdateScoreboardUI()
+    {
+        scoreText.text = $"Score: <color=blue>{meScore}</color> | <color=red>{worldScore}</color>";
+    }
 }

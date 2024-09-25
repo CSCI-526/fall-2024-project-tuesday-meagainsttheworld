@@ -11,6 +11,7 @@ public class TrapController : MonoBehaviour
     private Renderer trapRenderer;
     public Color selectedColor = Color.red;
     private Color originalColor;
+    public GameManager gameManager; // Reference to GameManager
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +35,9 @@ public class TrapController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Check if the game is active before allowing trap controls
+        if (!gameManager.isGameActive) return;
+
         // Switch to the previous trap by pressing "," 
         if (Input.GetKeyDown(KeyCode.Comma))
         {

@@ -45,8 +45,7 @@ public class PlayerController : MonoBehaviour
         }
     } 
 
-    
-
+    public GameManager gameManager; // Reference to GameManager
 
     /// Awake is called when the script instance is being loaded.
     private void Awake()
@@ -71,6 +70,9 @@ public class PlayerController : MonoBehaviour
     /// This function is called every fixed framerate frame, if the MonoBehaviour is enabled.
     void FixedUpdate()
     {
+        // Check if the game is active before allowing movement
+        if (!gameManager.isGameActive) return;
+
         if(!IsOnWall){
             playerRb.velocity = new Vector2(moveInput.x * moveSpeed, playerRb.velocity.y);
         }
@@ -82,6 +84,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnMove(InputAction.CallbackContext context)
     {
+        if (!gameManager.isGameActive) return; // Prevent movement input if the game hasn't started
         moveInput = context.ReadValue<Vector2>();        
         IsMoving = moveInput != Vector2.zero;
         SetFacingDirection(moveInput);
@@ -98,6 +101,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
+        if (!gameManager.isGameActive) return; // Prevent jumping input if the game hasn't started
         //check if alive too
         if(context.started && IsGrounded)
         {
