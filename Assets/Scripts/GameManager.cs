@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public GameObject titleScreen;
     public TextMeshProUGUI lifeText;
     public TextMeshProUGUI scoreText;
+    public Button nextButton;
     //public TextMeshProUGUI TrapsText;
     public TextMeshProUGUI WinText;
     public static int playerLives = 3;       // Starting lives for "Me"
@@ -26,14 +27,25 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        if (lifeText == null)
+        {
+            lifeText = GameObject.Find("Life Text").GetComponent<TextMeshProUGUI>(); 
+            // Ensure "ScoreText" matches the name of your Text object in the hierarchy
+        }
         if (scoreText == null)
         {
             scoreText = GameObject.Find("Score Text").GetComponent<TextMeshProUGUI>(); 
             // Ensure "ScoreText" matches the name of your Text object in the hierarchy
         }
+        if (nextButton == null)
+        {
+            nextButton = GameObject.Find("Next Button").GetComponent<Button>();  // Ensure you named the button correctly
+        }
         // Hide the life and score text at the start
         lifeText.gameObject.SetActive(false); 
         scoreText.gameObject.SetActive(false);
+        nextButton.gameObject.SetActive(false); // Hide the next button initially
         if (!hasGameReset)
         {
             playerLives = 3;  // Reset to initial lives
@@ -77,6 +89,7 @@ public class GameManager : MonoBehaviour
         UpdateScoreboardUI();
         WinText.gameObject.SetActive(true);
         WinText.text = "Me Wins!";
+        nextButton.gameObject.SetActive(true);
         
         // Move to next level or any transition logic
     }
@@ -98,6 +111,7 @@ public class GameManager : MonoBehaviour
         }
         WinText.gameObject.SetActive(true);
         WinText.text = "World Wins!";
+        nextButton.gameObject.SetActive(true);
         
         // Move to next level or any transition logic
     }
@@ -132,5 +146,11 @@ public class GameManager : MonoBehaviour
     private void UpdateScoreboardUI()
     {
         scoreText.text = $"Score: <color=blue>{meScore}</color> | <color=red>{worldScore}</color>";
+    }
+
+    // Function to load the next level
+    public void LoadNextLevel()
+    {
+        SceneManager.LoadScene("Level 3"); // Replace "Level 2" with the actual scene name
     }
 }
