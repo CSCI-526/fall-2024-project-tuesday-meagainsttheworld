@@ -2023,6 +2023,7 @@ MonoBehaviour:
   downLimit: 5
   moveSpeed: 10
   timeLimit: 3
+  expand: 2
 --- !u!1 &1292036532
 GameObject:
   m_ObjectHideFlags: 0
@@ -2057,7 +2058,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -375, y: -50}
+  m_AnchoredPosition: {x: -180, y: -50}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1292036534
@@ -2344,12 +2345,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9de0d287fc2504b28a3acf5b0af61906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 1887808005}
   traps:
   - {fileID: 1407419609}
   - {fileID: 1078873932}
   - {fileID: 577531907}
+  progressBar: {fileID: 0}
   selectedColor: {r: 1, g: 0.947826, b: 0, a: 1}
-  gameManager: {fileID: 1887808005}
 --- !u!4 &1319341231
 Transform:
   m_ObjectHideFlags: 0
@@ -2819,6 +2821,7 @@ MonoBehaviour:
   titleScreen: {fileID: 467942304}
   lifeText: {fileID: 523737920}
   scoreText: {fileID: 0}
+  nextButton: {fileID: 0}
   WinText: {fileID: 1881601565}
   isMeWinner: 0
   isWorldWinner: 0
@@ -3148,6 +3151,7 @@ MonoBehaviour:
   titleScreen: {fileID: 467942304}
   lifeText: {fileID: 523737920}
   scoreText: {fileID: 1292036534}
+  nextButton: {fileID: 0}
   WinText: {fileID: 1881601565}
   isMeWinner: 0
   isWorldWinner: 0
