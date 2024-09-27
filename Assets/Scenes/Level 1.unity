@@ -2434,7 +2434,6 @@ MonoBehaviour:
   traps:
   - {fileID: 1078873932}
   - {fileID: 1407419609}
-  - {fileID: 0}
   progressBar: {fileID: 773520478}
   selectedColor: {r: 1, g: 0.947826, b: 0, a: 1}
 --- !u!4 &1319341231
