@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class TrapController : MonoBehaviour
 {
+    public GameManager gameManager; // Reference to GameManager
     public List<Trap> traps = new List<Trap>();
+    public TrapProgressBar progressBar;
 
     private int currentTrapIndex = 0;
 
     private Renderer trapRenderer;
-    public Color selectedColor = Color.red;
+    public Color selectedColor = Color.yellow;
     private Color originalColor;
-    public GameManager gameManager; // Reference to GameManager
 
     // Start is called before the first frame update
     void Start()
@@ -73,6 +74,11 @@ public class TrapController : MonoBehaviour
     void SelectTrap(int index)
     {
         Debug.Log($"Trap {traps[index].name} is selected.");
+
+        if (progressBar != null)
+        {
+            progressBar.SetTrap(traps[index]);
+        }
         // add visual change
         trapRenderer = traps[index].GetComponent<Renderer>();
         originalColor = trapRenderer.material.color;
