@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class TrapExpandableHorizontal : Trap
 {
+    public float expand = 2f;
 
     public override void ActivateSkill()
     {
         Debug.Log($"Trap {name} activates its skill: expand horizontally");
-        ExpandHorizontally(1.5f);
+        ExpandHorizontally(expand);
     }
 
     public override void DeactivateSkill()

@@ -7,6 +7,7 @@ public abstract class Trap : MonoBehaviour
     // public bool isDangerous = true;
     // public bool isControllable = false;
 
+    // movement control
     public bool moveHorizontally = false;
     public float leftLimit = 5f;
     public float rightLimit = 5f;
@@ -14,8 +15,14 @@ public abstract class Trap : MonoBehaviour
     public float upLimit = 5f;
     public float downLimit = 5f;
     public float moveSpeed = 10.0f;
+
+    // timer
     public float timeLimit = 3.0f;
     protected float timeUsed = 0f;
+    public float RemainingTime => Mathf.Max(0, timeLimit - timeUsed);
+    public float Progress => timeUsed / timeLimit;
+
+    // other data
     protected Vector3 originalScale;
     protected Vector3 startingPosition;
     protected bool hasTransformed = false;
@@ -69,6 +76,11 @@ public abstract class Trap : MonoBehaviour
         {
             Debug.Log($"Time limit of {timeLimit} sec is used up. Cannot use skill.");
         }
+    }
+
+    public void ResetTimer()
+    {
+        timeUsed = 0f;
     }
 
     // skills and restoration
