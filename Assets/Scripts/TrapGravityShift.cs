@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TrapGravityShift : Trap
 {
-    public Vector3 gravityDirection = Vector3.down; // Default gravity direction
+    public Vector3 gravityDirection = Vector3.up;
     private Vector3 originalGravity;
 
     private void Awake()
