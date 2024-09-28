@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        playerLives = 3;
         if (lifeText == null)
         {
             lifeText = GameObject.Find("Life Text").GetComponent<TextMeshProUGUI>(); 
