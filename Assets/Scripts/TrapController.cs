@@ -29,6 +29,11 @@ public class TrapController : MonoBehaviour
         // traps.AddRange(FindObjectsOfType<Trap>());
         if (traps.Count > 0)
         {
+            // here for each trap in traps, set trap.trapController = this controller
+            foreach (Trap trap in traps)
+            {
+                trap.trapController = this;
+            }
             SelectTrap(0);
         }
     }
@@ -60,7 +65,10 @@ public class TrapController : MonoBehaviour
             }
             else
             {
-                traps[currentTrapIndex].DeactivateSkill();
+                if (!traps[currentTrapIndex].oneTimeSkill)
+                {
+                    traps[currentTrapIndex].DeactivateSkill();
+                }
             }
         }
     }

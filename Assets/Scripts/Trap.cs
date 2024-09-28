@@ -8,6 +8,7 @@ public abstract class Trap : MonoBehaviour
     // public bool isControllable = false;
 
     // movement control
+    public TrapController trapController;
     public bool moveHorizontally = false;
     public float leftLimit = 5f;
     public float rightLimit = 5f;
@@ -17,6 +18,7 @@ public abstract class Trap : MonoBehaviour
     public float moveSpeed = 10.0f;
 
     // timer
+    public bool oneTimeSkill = false;
     public float timeLimit = 3.0f;
     protected float timeUsed = 0f;
     public float RemainingTime => Mathf.Max(0, timeLimit - timeUsed);
@@ -29,7 +31,7 @@ public abstract class Trap : MonoBehaviour
     public abstract void ActivateSkill();
     public abstract void DeactivateSkill();
 
-    protected void Start()
+    protected void Awake()
     {
         originalScale = transform.localScale;
         startingPosition = transform.position;
@@ -60,21 +62,27 @@ public abstract class Trap : MonoBehaviour
 
     public void ActivateSkillTimed()
     {
-        Debug.Log("Skill deactivated.");
         if (timeUsed < timeLimit)
         {
             ActivateSkill();
-            timeUsed += Time.deltaTime;
-            // If accumulated time reaches max duration, deactivate skill
-            if (timeUsed >= timeLimit)
+            if (oneTimeSkill)
             {
-                Debug.Log($"Time limit of {timeLimit} sec is used up. Deactivate skill.");
-                DeactivateSkill();
+                timeUsed = timeLimit;
+            }
+            else
+            {
+                timeUsed += Time.deltaTime;
+                // If accumulated time reaches max duration, deactivate skill
+                if (timeUsed >= timeLimit)
+                {
+                    Debug.Log($"Time limit of {timeLimit} sec is used up. Deactivate skill.");
+                    DeactivateSkill();
+                }
             }
         }
         else
         {
-            Debug.Log($"Time limit of {timeLimit} sec is used up. Cannot use skill.");
+            Debug.Log($"Time limit is used up. Cannot use skill.");
         }
     }
 
