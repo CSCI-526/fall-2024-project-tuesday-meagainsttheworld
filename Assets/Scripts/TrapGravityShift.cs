@@ -7,7 +7,7 @@ public class TrapGravityShift : Trap
     public Vector3 gravityDirection = Vector3.up;
     private Vector3 originalGravity;
 
-    private void Awake()
+    private void Start()
     {
         originalGravity = Physics2D.gravity;
     }
