@@ -14,29 +14,45 @@ public class GameManager : MonoBehaviour
     //public TextMeshProUGUI TrapsText;
     public TextMeshProUGUI WinText;
     public static int playerLives = 3;       // Starting lives for "Me"
-    //public static int trapCount = 1;         // Starting traps for "World"
     private bool hasGameReset = false;
     public bool isMeWinner = false;   // Track if "Me" wins
     public bool isWorldWinner = false; // Track if "World" wins
     private bool hasWon = false; //Track if "Me" has already won
     public bool isGameActive = false; // Track if the game has started
-    public int meScore { get; private set; } = 0;
-    public int worldScore { get; private set; } = 0;
+    public static int meScore { get; private set; } = 0;
+    public static int worldScore { get; private set; } = 0;
     public string flagTag = "Flag";    // Tag for the right wall finish
+    //private bool isNewGame = true; // Track if this is a new game
+    private static bool isGameStarted = false;
 
     // Start is called before the first frame update
     void Start()
     {
         playerLives = 3;
+
+        // Reset scores at the beginning of the game
+        // if (isNewGame)
+        // {
+        //     meScore = 0; // Reset Me's score
+        //     worldScore = 0; // Reset World’s score
+        //     isNewGame = false; // Set to false after the first game start
+        // }
+
+        // Reset scores if the game hasn't been started before
+        if (!isGameStarted)
+        {
+            meScore = 0; 
+            worldScore = 0; 
+            isGameStarted = true; // Set to true after the first game start
+        }
+
         if (lifeText == null)
         {
             lifeText = GameObject.Find("Life Text").GetComponent<TextMeshProUGUI>(); 
-            // Ensure "ScoreText" matches the name of your Text object in the hierarchy
         }
         if (scoreText == null)
         {
             scoreText = GameObject.Find("Score Text").GetComponent<TextMeshProUGUI>(); 
-            // Ensure "ScoreText" matches the name of your Text object in the hierarchy
         }
         if (nextButton == null)
         {
@@ -49,7 +65,6 @@ public class GameManager : MonoBehaviour
         if (!hasGameReset)
         {
             playerLives = 3;  // Reset to initial lives
-            //trapCount = 1;    // Reset to initial traps
             hasGameReset = true;  // Set the flag to prevent multiple resets
         }
         // Initialize lives and traps, if necessary
@@ -69,13 +84,19 @@ public class GameManager : MonoBehaviour
     public void StartGame(){
         titleScreen.gameObject.SetActive(false);
         isGameActive = true; // Set game to active
+        // if (isNewGame)
+        // {
+        //     meScore = 0; // Reset Me's score
+        //     worldScore = 0; // Reset World’s score
+        //     isNewGame = false; // Set to false after the first game start
+        // }
         // Show Lives and Score texts after pressing play
         lifeText.gameObject.SetActive(true); 
         scoreText.gameObject.SetActive(true);
         lifeText.text = "Lives: " + playerLives;
-        scoreText.text = $"Score: <color=blue>0</color> | <color=red>0</color>";
+        //scoreText.text = $"Score: <color=blue>0</color> | <color=red>0</color>";
+        UpdateScoreboardUI(); // Show current scores
         WinText.gameObject.SetActive(false); // Hide any Win text from previous runs
-        
     }
 
     public void MeWins()
@@ -151,6 +172,30 @@ public class GameManager : MonoBehaviour
     // Function to load the next level
     public void LoadNextLevel()
     {
-        SceneManager.LoadScene("Level 3"); // Replace "Level 2" with the actual scene name
+        // SceneManager.LoadScene("Level 3"); // Replace "Level 2" with the actual scene name
+        if (SceneManager.GetActiveScene().name == "Level 1")
+        {
+            SceneManager.LoadScene("Level 2"); // Load Level 2
+        }
+        else if (SceneManager.GetActiveScene().name == "Level 2")
+        {
+            SceneManager.LoadScene("Level 3"); // Load Level 3
+        }
+        // Reset game state for new level if necessary
+        hasWon = false; // Reset win status
+        playerLives = 3; // Reset player lives for the new level
+        lifeText.text = "Lives: " + playerLives; // Update life text
     }
+
+    void OnApplicationQuit()
+    {
+        ResetStaticScores();
+    }
+
+    private void ResetStaticScores()
+    {
+        meScore = 0;
+        worldScore = 0;
+    }
+
 }

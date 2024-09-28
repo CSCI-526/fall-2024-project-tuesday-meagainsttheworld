@@ -2574,7 +2574,7 @@ MonoBehaviour:
   titleScreen: {fileID: 467942304}
   lifeText: {fileID: 523737920}
   scoreText: {fileID: 0}
-  nextButton: {fileID: 0}
+  nextButton: {fileID: 658379837}
   WinText: {fileID: 1881601565}
   isMeWinner: 0
   isWorldWinner: 0
