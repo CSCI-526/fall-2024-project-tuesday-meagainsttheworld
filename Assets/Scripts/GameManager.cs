@@ -185,9 +185,14 @@ public class GameManager : MonoBehaviour
 
     public void LoadNextLevel()
     {
-        if (SceneManager.GetActiveScene().name == "Level 1")
-        {
-            SceneManager.LoadScene("Level 2"); // Load Level 2
+        if (SceneManager.GetActiveScene().name == "Level 0-1"){
+            SceneManager.LoadScene("Level 0-2"); // Load Level 0-2
+        }else if (SceneManager.GetActiveScene().name == "Level 0-2"){
+            SceneManager.LoadScene("Level 0-3");
+        }else if (SceneManager.GetActiveScene().name == "Level 0-3"){
+            SceneManager.LoadScene("Level 1");
+        }else if (SceneManager.GetActiveScene().name == "Level 1"){
+            SceneManager.LoadScene("Level 2");
         }
         // else if (SceneManager.GetActiveScene().name == "Level 2")
         // {
