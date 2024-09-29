@@ -11,7 +11,7 @@ public class PlayerHealth : MonoBehaviour
     public Transform respawnPoint;
     private Rigidbody2D playerRb;
     public GameManager gameManager;
-    public int life = 3;
+    public int life;
     public TextMeshProUGUI lifeText;
 
     // Start is called before the first frame update
@@ -36,7 +36,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
-        if (gameManager.isWorldWinner || GameManager.playerLives <= 0)
+        if (gameManager.isWorldWinner || life <= 0)
         {
             return;
         }

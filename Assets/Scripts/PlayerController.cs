@@ -111,4 +111,19 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Flag"))
+        {
+            HandleFlagTrigger(other);
+        }
+    }
+    private void HandleFlagTrigger(Collider2D other)
+    {
+        // Your logic for when the player touches the flag
+        Debug.Log("Flag was triggered!");
+        gameManager.HandleFlag(other);
+        // Additional logic...
+    }
+
 }

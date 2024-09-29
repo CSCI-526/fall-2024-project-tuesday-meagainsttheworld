@@ -10,33 +10,26 @@ public class GameManager : MonoBehaviour
     public GameObject titleScreen;
     public TextMeshProUGUI lifeText;
     public TextMeshProUGUI scoreText;
+    public GameObject trapTimer;
     public Button nextButton;
-    //public TextMeshProUGUI TrapsText;
     public TextMeshProUGUI WinText;
-    public static int playerLives = 3;       // Starting lives for "Me"
+    //public static int playerLives = 3;       // Starting lives for "Me"
+    public PlayerHealth playerHealth;
+    public int playerLives;
     private bool hasGameReset = false;
     public bool isMeWinner = false;   // Track if "Me" wins
     public bool isWorldWinner = false; // Track if "World" wins
-    private bool hasWon = false; //Track if "Me" has already won
+    private bool hasWon = false; // Track if "Me" has already won
     public bool isGameActive = false; // Track if the game has started
     public static int meScore { get; private set; } = 0;
     public static int worldScore { get; private set; } = 0;
     public string flagTag = "Flag";    // Tag for the right wall finish
-    //private bool isNewGame = true; // Track if this is a new game
     private static bool isGameStarted = false;
 
     // Start is called before the first frame update
     void Start()
     {
-        playerLives = 3;
-
-        // Reset scores at the beginning of the game
-        // if (isNewGame)
-        // {
-        //     meScore = 0; // Reset Me's score
-        //     worldScore = 0; // Reset World’s score
-        //     isNewGame = false; // Set to false after the first game start
-        // }
+        playerLives = playerHealth.life;
 
         // Reset scores if the game hasn't been started before
         if (!isGameStarted)
@@ -54,17 +47,22 @@ public class GameManager : MonoBehaviour
         {
             scoreText = GameObject.Find("Score Text").GetComponent<TextMeshProUGUI>(); 
         }
+        if (trapTimer == null)
+        {
+            trapTimer = GameObject.Find("TrapTimer"); 
+        }
         if (nextButton == null)
         {
-            nextButton = GameObject.Find("Next Button").GetComponent<Button>();  // Ensure you named the button correctly
+            nextButton = GameObject.Find("Next Button").GetComponent<Button>(); 
         }
-        // Hide the life and score text at the start
+        // Hide the life and score text and trap timer at the start
         lifeText.gameObject.SetActive(false); 
         scoreText.gameObject.SetActive(false);
+        trapTimer.gameObject.SetActive(false);
         nextButton.gameObject.SetActive(false); // Hide the next button initially
         if (!hasGameReset)
         {
-            playerLives = 3;  // Reset to initial lives
+            playerLives = playerHealth.life;  // Reset to initial lives
             hasGameReset = true;  // Set the flag to prevent multiple resets
         }
         // Initialize lives and traps, if necessary
@@ -81,20 +79,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void StartGame(){
+    public void StartGame()
+    {
         titleScreen.gameObject.SetActive(false);
         isGameActive = true; // Set game to active
-        // if (isNewGame)
-        // {
-        //     meScore = 0; // Reset Me's score
-        //     worldScore = 0; // Reset World’s score
-        //     isNewGame = false; // Set to false after the first game start
-        // }
-        // Show Lives and Score texts after pressing play
+        // Show Lives and Score texts and trap timer after pressing play
         lifeText.gameObject.SetActive(true); 
         scoreText.gameObject.SetActive(true);
+        trapTimer.gameObject.SetActive(true);
         lifeText.text = "Lives: " + playerLives;
-        //scoreText.text = $"Score: <color=blue>0</color> | <color=red>0</color>";
         UpdateScoreboardUI(); // Show current scores
         WinText.gameObject.SetActive(false); // Hide any Win text from previous runs
     }
@@ -104,24 +97,27 @@ public class GameManager : MonoBehaviour
         if (hasWon) return; // Prevent multiple calls
         hasWon = true; // Set the flag
         isMeWinner = true;
-        //playerLives++; // Reward 1 extra life
         meScore++;
         Debug.Log("Me wins! Me's Score: "+ meScore);
         UpdateScoreboardUI();
         WinText.gameObject.SetActive(true);
         WinText.text = "Me Wins!";
-        nextButton.gameObject.SetActive(true);
-        
-        // Move to next level or any transition logic
+        // Disable next button if on Level 2
+        if (SceneManager.GetActiveScene().name == "Level 2")
+        {
+            nextButton.gameObject.SetActive(false); // Hide the next button in Level 2
+        }
+        else
+        {
+            nextButton.gameObject.SetActive(true); // Show the next button for other levels
+        }
     }
 
-    // Call this when "World" wins (e.g., player runs out of lives)
     public void WorldWins()
     {
         if (hasWon) return; // Prevent multiple calls
         hasWon = true; // Set the flag
         isWorldWinner = true;
-        //trapCount++; // Reward an extra trap
         worldScore++;
         Debug.Log("World wins! World's Score: "+ worldScore);
         UpdateScoreboardUI();
@@ -132,12 +128,17 @@ public class GameManager : MonoBehaviour
         }
         WinText.gameObject.SetActive(true);
         WinText.text = "World Wins!";
-        nextButton.gameObject.SetActive(true);
-        
-        // Move to next level or any transition logic
+        // Disable next button if on Level 2
+        if (SceneManager.GetActiveScene().name == "Level 3")
+        {
+            nextButton.gameObject.SetActive(false); // Hide the next button in Level 3
+        }
+        else
+        {
+            nextButton.gameObject.SetActive(true); // Show the next button for other levels
+        }
     }
 
-    // Call this when "Me" dies
     public void OnPlayerDeath()
     {
         if (!hasWon) // Check if world hasn't already won
@@ -153,9 +154,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Detect when "Me" reaches the right wall (finish line)
-    private void OnTriggerEnter2D(Collider2D other)
+    // private void OnTriggerEnter2D(Collider2D other)
+    // {
+    //     Debug.Log("Player collided with: " + other.gameObject.name); // To verify collision detection
+    //     // Check if the object that collided has the "RightWall" tag
+    //     if (other.gameObject.CompareTag(flagTag))
+    //     {
+    //         Debug.Log("Flag hit detected.");
+    //         MeWins(); // Player reached the right wall (finish)
+    //     }
+    // }
+    public void HandleFlag(Collider2D other)
     {
+        // Logic for handling flag trigger (e.g., increment score, play sound)
+        Debug.Log("GameManager: Flag triggered!");
+        // Additional logic...
         Debug.Log("Player collided with: " + other.gameObject.name); // To verify collision detection
         // Check if the object that collided has the "RightWall" tag
         if (other.gameObject.CompareTag(flagTag))
@@ -164,26 +177,25 @@ public class GameManager : MonoBehaviour
             MeWins(); // Player reached the right wall (finish)
         }
     }
+
     private void UpdateScoreboardUI()
     {
         scoreText.text = $"Score: <color=blue>{meScore}</color> | <color=red>{worldScore}</color>";
     }
 
-    // Function to load the next level
     public void LoadNextLevel()
     {
-        // SceneManager.LoadScene("Level 3"); // Replace "Level 2" with the actual scene name
         if (SceneManager.GetActiveScene().name == "Level 1")
         {
             SceneManager.LoadScene("Level 2"); // Load Level 2
         }
-        else if (SceneManager.GetActiveScene().name == "Level 2")
-        {
-            SceneManager.LoadScene("Level 3"); // Load Level 3
-        }
+        // else if (SceneManager.GetActiveScene().name == "Level 2")
+        // {
+        //     SceneManager.LoadScene("Level 3"); // Load Level 3
+        // }
         // Reset game state for new level if necessary
         hasWon = false; // Reset win status
-        playerLives = 3; // Reset player lives for the new level
+        playerLives = playerHealth.life; // Reset player lives for the new level
         lifeText.text = "Lives: " + playerLives; // Update life text
     }
 
@@ -197,5 +209,4 @@ public class GameManager : MonoBehaviour
         meScore = 0;
         worldScore = 0;
     }
-
 }

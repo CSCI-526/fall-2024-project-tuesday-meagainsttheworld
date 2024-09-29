@@ -1078,7 +1078,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -116, y: -141}
+  m_AnchoredPosition: {x: -270, y: -96}
   m_SizeDelta: {x: 116.15674, y: 24.062866}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &461842608
@@ -3171,32 +3171,6 @@ Transform:
   - {fileID: 1035993453}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1675019342 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8753309810611453947, guid: 7831cc179b31a894da06c7bdde42dc2d, type: 3}
-  m_PrefabInstance: {fileID: 6071125312053347499}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1675019349
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1675019342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b4c0cbbb4b46f44a8909a31677e22c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  titleScreen: {fileID: 467942304}
-  lifeText: {fileID: 523737920}
-  scoreText: {fileID: 0}
-  nextButton: {fileID: 0}
-  WinText: {fileID: 1881601565}
-  isMeWinner: 0
-  isWorldWinner: 0
-  isGameActive: 0
-  flagTag: Flag
 --- !u!1 &1717891856
 GameObject:
   m_ObjectHideFlags: 0
@@ -3521,8 +3495,11 @@ MonoBehaviour:
   titleScreen: {fileID: 467942304}
   lifeText: {fileID: 523737920}
   scoreText: {fileID: 1292036534}
+  trapTimer: {fileID: 461842606}
   nextButton: {fileID: 2122459399}
   WinText: {fileID: 1881601565}
+  playerHealth: {fileID: 6071125312053347500}
+  playerLives: 3
   isMeWinner: 0
   isWorldWinner: 0
   isGameActive: 0
@@ -6725,6 +6702,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3393933600107503037, guid: 7831cc179b31a894da06c7bdde42dc2d, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3976052045246609430, guid: 7831cc179b31a894da06c7bdde42dc2d, type: 3}
       propertyPath: gameManager
       value: 
@@ -6739,7 +6720,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8703916801550264067, guid: 7831cc179b31a894da06c7bdde42dc2d, type: 3}
       propertyPath: life
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8703916801550264067, guid: 7831cc179b31a894da06c7bdde42dc2d, type: 3}
       propertyPath: lifeText
@@ -6764,11 +6745,19 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8753309810611453947, guid: 7831cc179b31a894da06c7bdde42dc2d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1675019349}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7831cc179b31a894da06c7bdde42dc2d, type: 3}
+--- !u!114 &6071125312053347500 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8703916801550264067, guid: 7831cc179b31a894da06c7bdde42dc2d, type: 3}
+  m_PrefabInstance: {fileID: 6071125312053347499}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d076790ada04904a8feba810c2ff01e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
