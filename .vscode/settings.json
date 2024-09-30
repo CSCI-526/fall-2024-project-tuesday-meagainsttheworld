@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Me_Against_The_World.sln"
+    "dotnet.defaultSolution": "paired-prototype-f24-tuesday-me-against-the-world.sln"
 }
