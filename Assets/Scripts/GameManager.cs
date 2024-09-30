@@ -9,11 +9,12 @@ public class GameManager : MonoBehaviour
 {
     public GameObject titleScreen;
     public TextMeshProUGUI lifeText;
+    public TextMeshProUGUI levelText;
     public TextMeshProUGUI scoreText;
     public GameObject trapTimer;
     public Button nextButton;
     public TextMeshProUGUI WinText;
-    //public static int playerLives = 3;       // Starting lives for "Me"
+    public GameObject winBackground;
     public PlayerHealth playerHealth;
     public int playerLives;
     private bool hasGameReset = false;
@@ -43,6 +44,10 @@ public class GameManager : MonoBehaviour
         {
             lifeText = GameObject.Find("Life Text").GetComponent<TextMeshProUGUI>(); 
         }
+        if (levelText == null)
+        {
+            levelText = GameObject.Find("Level Text").GetComponent<TextMeshProUGUI>(); 
+        }
         if (scoreText == null)
         {
             scoreText = GameObject.Find("Score Text").GetComponent<TextMeshProUGUI>(); 
@@ -57,6 +62,7 @@ public class GameManager : MonoBehaviour
         }
         // Hide the life and score text and trap timer at the start
         lifeText.gameObject.SetActive(false); 
+        levelText.gameObject.SetActive(false);
         scoreText.gameObject.SetActive(false);
         trapTimer.gameObject.SetActive(false);
         nextButton.gameObject.SetActive(false); // Hide the next button initially
@@ -85,11 +91,13 @@ public class GameManager : MonoBehaviour
         isGameActive = true; // Set game to active
         // Show Lives and Score texts and trap timer after pressing play
         lifeText.gameObject.SetActive(true); 
+        levelText.gameObject.SetActive(true);
         scoreText.gameObject.SetActive(true);
         trapTimer.gameObject.SetActive(true);
         lifeText.text = "Lives: " + playerLives;
         UpdateScoreboardUI(); // Show current scores
         WinText.gameObject.SetActive(false); // Hide any Win text from previous runs
+        winBackground.SetActive(false);
     }
 
     public void MeWins()
@@ -102,6 +110,8 @@ public class GameManager : MonoBehaviour
         UpdateScoreboardUI();
         WinText.gameObject.SetActive(true);
         WinText.text = "Me Wins!";
+        winBackground.SetActive(true);
+        WinText.rectTransform.anchoredPosition = new Vector2(120, WinText.rectTransform.anchoredPosition.y);
         // Disable next button if on Level 2
         if (SceneManager.GetActiveScene().name == "Level 2")
         {
@@ -128,8 +138,10 @@ public class GameManager : MonoBehaviour
         }
         WinText.gameObject.SetActive(true);
         WinText.text = "World Wins!";
+        winBackground.SetActive(true);
+        WinText.rectTransform.anchoredPosition = new Vector2(10, WinText.rectTransform.anchoredPosition.y);
         // Disable next button if on Level 2
-        if (SceneManager.GetActiveScene().name == "Level 3")
+        if (SceneManager.GetActiveScene().name == "Level 2")
         {
             nextButton.gameObject.SetActive(false); // Hide the next button in Level 3
         }
@@ -154,20 +166,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // private void OnTriggerEnter2D(Collider2D other)
-    // {
-    //     Debug.Log("Player collided with: " + other.gameObject.name); // To verify collision detection
-    //     // Check if the object that collided has the "RightWall" tag
-    //     if (other.gameObject.CompareTag(flagTag))
-    //     {
-    //         Debug.Log("Flag hit detected.");
-    //         MeWins(); // Player reached the right wall (finish)
-    //     }
-    // }
     public void HandleFlag(Collider2D other)
     {
-        // Logic for handling flag trigger (e.g., increment score, play sound)
-        Debug.Log("GameManager: Flag triggered!");
         // Additional logic...
         Debug.Log("Player collided with: " + other.gameObject.name); // To verify collision detection
         // Check if the object that collided has the "RightWall" tag
@@ -185,19 +185,23 @@ public class GameManager : MonoBehaviour
 
     public void LoadNextLevel()
     {
-        if (SceneManager.GetActiveScene().name == "Level 0-1"){
+        if (SceneManager.GetActiveScene().name == "Level 0-1")
+        {
             SceneManager.LoadScene("Level 0-2"); // Load Level 0-2
-        }else if (SceneManager.GetActiveScene().name == "Level 0-2"){
+        }
+        else if (SceneManager.GetActiveScene().name == "Level 0-2")
+        {
             SceneManager.LoadScene("Level 0-3");
-        }else if (SceneManager.GetActiveScene().name == "Level 0-3"){
+        }
+        else if (SceneManager.GetActiveScene().name == "Level 0-3")
+        {
+            ResetStaticScores();
             SceneManager.LoadScene("Level 1");
-        }else if (SceneManager.GetActiveScene().name == "Level 1"){
+        }
+        else if (SceneManager.GetActiveScene().name == "Level 1")
+        {
             SceneManager.LoadScene("Level 2");
         }
-        // else if (SceneManager.GetActiveScene().name == "Level 2")
-        // {
-        //     SceneManager.LoadScene("Level 3"); // Load Level 3
-        // }
         // Reset game state for new level if necessary
         hasWon = false; // Reset win status
         playerLives = playerHealth.life; // Reset player lives for the new level
