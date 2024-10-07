@@ -6,7 +6,6 @@ public class ObjectGravityShift : MonoBehaviour
 {
     // Flip only the current object's gravity 
     private Rigidbody2D rb;
-    private bool isGravityFlipped = false;
     public bool flipGravityAtStart = false;
 
     void Start()
@@ -14,8 +13,7 @@ public class ObjectGravityShift : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         if (flipGravityAtStart)
         {
-            rb.gravityScale = -1;
-            isGravityFlipped = true;
+            rb.gravityScale *= -1;
         }
     }
 
@@ -24,8 +22,7 @@ public class ObjectGravityShift : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
         {
             // Flip the gravity scale only for this object
-            rb.gravityScale = isGravityFlipped ? 1 : -1;
-            isGravityFlipped = !isGravityFlipped;
+            rb.gravityScale *= -1;
         }
     }
 }
