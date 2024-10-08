@@ -643,8 +643,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64c8e687a3b9a42f8a5820acd3ce1024, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rightwardGravity: 1
-  gravityStrength: 9.8
+  rightwardGravity: 0
+  gravityStrength: 500
 --- !u!61 &1634064698
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -699,8 +699,8 @@ Transform:
   m_GameObject: {fileID: 1634064696}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -13.22, y: -0.57, z: -0.07672027}
-  m_LocalScale: {x: 6, y: 3, z: 1}
+  m_LocalPosition: {x: -6.17, y: 2.02, z: -0.07672027}
+  m_LocalScale: {x: 7.65, y: 12.220201, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
