@@ -1,70 +1,44 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController_K : MonoBehaviour
 {
-    public ContactFilter2D castFilter;
-    public float groundDistance = 0.05f;
-    public float wallDistance = 0.2f;
-    RaycastHit2D[] groundHits = new RaycastHit2D[5];
-    RaycastHit2D[] wallHits = new RaycastHit2D[5];
-    public float moveSpeed;
-    public float jumpImpulse;
+    [SerializeField] private float moveVal = 0f;
+    public float moveSpeed = 5;
+    public float jumpImpulse = 10;
+
     private Rigidbody2D playerRb;
+    public GameObject otherPlayer;
 
-    private Vector2 moveInput;
-    private BoxCollider2D touchingCol;
-    public bool IsMoving { get; private set; }
-    
-    //find ground
+    private int playerLayerMask;
     private Vector2 groundVector = Vector2.down;
-    [SerializeField] private bool _isGrounded = true;
-    public bool IsGrounded { 
-        get{return _isGrounded;}
-        private set{_isGrounded = value;} }
 
-    //find wall
-    [SerializeField] private bool _isOnWall = true;
-    private BoxCollider2D wallCheckCollider;
-    private Vector2 wallCheckDirection => gameObject.transform.localScale.x > 0 ? Vector2.right : Vector2.left;
-    public bool IsOnWall { 
-        get{return _isOnWall;}
-        private set{_isOnWall = value;} }
-
-    public bool _isFacingRight = true;
-    public bool IsFacingRight { 
-        get{return _isFacingRight;}
-        private set
-        {
-            if(_isFacingRight != value){
-                transform.localScale *= new Vector2(-1,1);}
-            _isFacingRight = value;
-        }
-    } 
+    [SerializeField] private bool IsGrounded = true;
+    [SerializeField] private bool IsOnLeftWall = false;
+    [SerializeField] private bool IsOnRightWall = false;
 
     // public GameManager gameManager;  Reference to GameManager
 
     /// Awake is called when the script instance is being loaded.
-    private void Awake()
+    void Awake()
     {
-        playerRb = GetComponent<Rigidbody2D>();
-        touchingCol = GetComponent<BoxCollider2D>();
-        wallCheckCollider = transform.Find("WallCheck").GetComponent<BoxCollider2D>();
+
     }
+
     // Start is called before the first frame update
     void Start()
     {
-
+        playerRb = GetComponent<Rigidbody2D>();
+        playerLayerMask = 1 << gameObject.layer;
+        groundVector *= playerRb.gravityScale;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        IsGrounded = Physics2D.BoxCast(transform.position, GetComponent<Collider2D>().bounds.size, 0, groundVector, 0.05f, playerLayerMask);
+        IsOnLeftWall = Physics2D.BoxCast(transform.position, GetComponent<Collider2D>().bounds.size, 0, Vector2.left, 0.2f, playerLayerMask);
+        IsOnRightWall = Physics2D.BoxCast(transform.position, GetComponent<Collider2D>().bounds.size, 0, Vector2.right, 0.2f, playerLayerMask);
     }
 
 
@@ -73,63 +47,40 @@ public class PlayerController_K : MonoBehaviour
     {
         // Check if the game is active before allowing movement
         // if (!gameManager.isGameActive) return;
-
-        // if(!IsOnWall){
-        //     playerRb.velocity = new Vector2(moveInput.x * moveSpeed, playerRb.velocity.y);
-        // }
-        if(groundVector == Vector2.down || groundVector == Vector2.up)
+        if((!IsOnLeftWall || moveVal != -1) && (!IsOnRightWall || moveVal != 1))
         {
-            playerRb.velocity = new Vector2(moveInput.x * moveSpeed, playerRb.velocity.y);
+            playerRb.velocity = new Vector2(moveVal * moveSpeed, playerRb.velocity.y);
         }
-        else if(groundVector == Vector2.left || groundVector == Vector2.right)
-        {
-            playerRb.velocity = new Vector2(playerRb.velocity.x, moveInput.y * moveSpeed);
-        }
-        
-        IsGrounded = touchingCol.Cast(groundVector, castFilter, groundHits, groundDistance) > 0;
-        IsOnWall = wallCheckCollider.Cast(wallCheckDirection, castFilter, wallHits, wallDistance) > 0;
     }
 
-    public void OnMove(InputAction.CallbackContext context)
+    void OnMove(InputValue val)
     {
-        // if (!gameManager.isGameActive) return; // Prevent movement input if the game hasn't started
-        moveInput = context.ReadValue<Vector2>();
-        IsMoving = moveInput != Vector2.zero;
-        SetFacingDirection(moveInput);
+        moveVal = val.Get<Vector2>().x;
     }
 
-    private void SetFacingDirection(Vector2 moveInput)
-    {
-        if(moveInput.x > 0 && !IsFacingRight){
-            IsFacingRight = true;
-        }else if(moveInput.x < 0 && IsFacingRight){
-            IsFacingRight = false;
-        }
-    }
-
-    public void OnJump(InputAction.CallbackContext context)
+    void OnJump()
     {
         // if (!gameManager.isGameActive) return; // Prevent jumping input if the game hasn't started
         //check if alive too
-        if(context.started && IsGrounded)
+        if (IsGrounded) playerRb.AddForce(jumpImpulse * -groundVector, ForceMode2D.Impulse);
+    }
+
+    void OnGravityToggle()
+    {
+        IsGrounded = Physics2D.Raycast(transform.position, groundVector, GetComponent<Collider2D>().bounds.extents.y + 0.05f, playerLayerMask);
+
+        Vector3 otherPlayerPos = otherPlayer.transform.position;
+        float otherPlayerExY = otherPlayer.GetComponent<Collider2D>().bounds.extents.y;
+        bool otherPlayerGrounded = Physics2D.Raycast(otherPlayerPos, -groundVector, otherPlayerExY + 0.05f, 1 << otherPlayer.layer);
+        if (IsGrounded || otherPlayerGrounded)
         {
-            if(groundVector == Vector2.down) playerRb.velocity = new Vector2(playerRb.velocity.x, jumpImpulse);
-            if(groundVector == Vector2.up) playerRb.velocity = new Vector2(playerRb.velocity.x, -jumpImpulse);
-            if(groundVector == Vector2.left) playerRb.velocity = new Vector2(jumpImpulse, playerRb.velocity.y);
-            if(groundVector == Vector2.right) playerRb.velocity = new Vector2(-jumpImpulse, playerRb.velocity.y);
+            playerRb.gravityScale *= -1;
+            groundVector *= -1;
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag.Contains("Gravity"))
-        {
-            if (other.CompareTag("DownGravity")) groundVector = Vector2.down;
-            else if (other.CompareTag("UpGravity")) groundVector = Vector2.up;
-            else if (other.CompareTag("LeftGravity")) groundVector = Vector2.left;
-            else if (other.CompareTag("RightGravity")) groundVector = Vector2.right;
-        }
-
         if (other.CompareTag("GrowPowerup"))
         {
             transform.localScale = transform.localScale.x < 2 ? new Vector3(2, 2, 1) : transform.localScale;
@@ -137,7 +88,7 @@ public class PlayerController_K : MonoBehaviour
         }
         if (other.CompareTag("ShrinkPowerup"))
         {
-            transform.localScale = transform.localScale.x < 2 ? new Vector3(0.5f, 0.5f, 1): transform.localScale;
+            transform.localScale = transform.localScale.x > 0.5 ? new Vector3(0.5f, 0.5f, 1): transform.localScale;
             Debug.Log("Shrink Activated");
         }
     }

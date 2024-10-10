@@ -4,10 +4,6 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - DownGravity
-  - UpGravity
-  - LeftGravity
-  - RightGravity
   - ShrinkPowerup
   - GrowPowerup
   layers:
@@ -17,8 +13,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Black
+  - White
   - 
   - 
   - 
