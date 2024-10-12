@@ -6,6 +6,8 @@ TagManager:
   tags:
   - ShrinkPowerup
   - GrowPowerup
+  - Trap
+  - FinishLine
   layers:
   - Default
   - TransparentFX
