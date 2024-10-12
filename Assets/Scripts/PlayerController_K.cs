@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController_K : MonoBehaviour
 {
@@ -90,6 +91,12 @@ public class PlayerController_K : MonoBehaviour
         {
             transform.localScale = transform.localScale.x > 0.5 ? new Vector3(0.5f, 0.5f, 1): transform.localScale;
             Debug.Log("Shrink Activated");
+        }
+
+        if (other.CompareTag("Trap"))
+        {
+            // Change the scene to the Game Over screen
+            SceneManager.LoadScene("GameOver");
         }
     }
 }
