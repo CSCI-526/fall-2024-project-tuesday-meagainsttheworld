@@ -1,102 +1,131 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 public class PlayerController_K : MonoBehaviour
 {
-    [SerializeField] private float moveVal = 0f;
-    public float moveSpeed = 5;
-    public float jumpImpulse = 10;
+    [SerializeField] private Vector2 moveInput;
+    
+    [Range(1, 20)] public float moveSpeed = 10;
+    [Range(1, 10)] public float jumpHeight = 4;
+    [Range(1, 100)] public float maxFallSpeed = 50;
+    [Range(0, 1)] public float wallSlideSlow = 0.1f;
+    [Range(1, 10)] public float baseGravity = 1;
+    [Range(1, 10)] public float fallGravityMultiplier = 1;
+
+    [Range(0, 1)] public float airAdjustMultiplier = 0.2f;
 
     private Rigidbody2D playerRb;
-    public GameObject otherPlayer;
+    private GameObject otherPlayer;
 
+    private Collider2D playerCollider;
     private int playerLayerMask;
     private Vector2 groundVector = Vector2.down;
+    private Vector2 jumpVector = Vector2.zero;
 
     [SerializeField] private bool IsGrounded = true;
     [SerializeField] private bool IsOnLeftWall = false;
     [SerializeField] private bool IsOnRightWall = false;
 
-    // public GameManager gameManager;  Reference to GameManager
-
-    /// Awake is called when the script instance is being loaded.
-    void Awake()
-    {
-
-    }
-
     // Start is called before the first frame update
     void Start()
     {
         playerRb = GetComponent<Rigidbody2D>();
+        playerCollider = GetComponent<Collider2D>();
         playerLayerMask = 1 << gameObject.layer;
         groundVector *= playerRb.gravityScale;
+
+        GameObject[] playerList = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject playerObj in playerList)
+        {
+            if (playerObj.name != name) otherPlayer = playerObj;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        IsGrounded = Physics2D.BoxCast(transform.position, GetComponent<Collider2D>().bounds.size, 0, groundVector, 0.05f, playerLayerMask);
-        IsOnLeftWall = Physics2D.BoxCast(transform.position, GetComponent<Collider2D>().bounds.size, 0, Vector2.left, 0.2f, playerLayerMask);
-        IsOnRightWall = Physics2D.BoxCast(transform.position, GetComponent<Collider2D>().bounds.size, 0, Vector2.right, 0.2f, playerLayerMask);
+        IsGrounded = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, 0, groundVector, 0.05f, playerLayerMask);
+        IsOnLeftWall = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, 0, Vector2.left, 0.05f, playerLayerMask);
+        IsOnRightWall = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, 0, Vector2.right, 0.05f, playerLayerMask);
+        
+        if (playerRb.velocity.y * groundVector.y > maxFallSpeed) playerRb.gravityScale = 0;
+        else
+        {
+            if (playerRb.velocity.y * -groundVector.y >= 0) playerRb.gravityScale = baseGravity * -groundVector.y;
+            else playerRb.gravityScale = fallGravityMultiplier * baseGravity * -groundVector.y;
+        }
+
     }
 
 
     /// This function is called every fixed framerate frame, if the MonoBehaviour is enabled.
     void FixedUpdate()
     {
-        // Check if the game is active before allowing movement
-        // if (!gameManager.isGameActive) return;
-        if((!IsOnLeftWall || moveVal != -1) && (!IsOnRightWall || moveVal != 1))
+        // Horizontal Movement
+        if (moveInput.x != 0 || IsGrounded)
         {
-            playerRb.velocity = new Vector2(moveVal * moveSpeed, playerRb.velocity.y);
+            float velDelta = moveSpeed * moveInput.x - playerRb.velocity.x;
+            Vector2 forceReq = new(playerRb.mass * velDelta / Time.fixedDeltaTime, 0);
+
+            if (IsGrounded) playerRb.AddForce(forceReq);
+            else playerRb.AddForce(airAdjustMultiplier * forceReq);
+        }
+
+        // Sliding on wall
+        if (((moveInput.x == -1 && IsOnLeftWall) || (moveInput.x == 1 && IsOnRightWall)) &&
+            ((playerRb.velocity.y * groundVector.y) > (maxFallSpeed * wallSlideSlow)))
+        {
+            float velDelta = (maxFallSpeed * wallSlideSlow * groundVector.y) - playerRb.velocity.y;
+            Vector2 forceReq = new(0, playerRb.mass * velDelta / Time.fixedDeltaTime);
+            playerRb.AddForce(forceReq);
         }
     }
 
-    void OnMove(InputValue val)
+    public void OnMove(InputAction.CallbackContext context)
     {
-        moveVal = val.Get<Vector2>().x;
+        moveInput = context.ReadValue<Vector2>();
     }
 
-    void OnJump()
+    public void OnJump(InputAction.CallbackContext context)
     {
-        // if (!gameManager.isGameActive) return; // Prevent jumping input if the game hasn't started
-        //check if alive too
-        if (IsGrounded) playerRb.AddForce(jumpImpulse * -groundVector, ForceMode2D.Impulse);
-    }
-
-    void OnGravityToggle()
-    {
-        IsGrounded = Physics2D.Raycast(transform.position, groundVector, GetComponent<Collider2D>().bounds.extents.y + 0.05f, playerLayerMask);
-
-        Vector3 otherPlayerPos = otherPlayer.transform.position;
-        float otherPlayerExY = otherPlayer.GetComponent<Collider2D>().bounds.extents.y;
-        bool otherPlayerGrounded = Physics2D.Raycast(otherPlayerPos, -groundVector, otherPlayerExY + 0.05f, 1 << otherPlayer.layer);
-        if (IsGrounded || otherPlayerGrounded)
+        if (context.phase == InputActionPhase.Started)
         {
-            playerRb.gravityScale *= -1;
-            groundVector *= -1;
+            float jumpMult = Mathf.Sqrt(jumpHeight * Mathf.Abs(Physics2D.gravity.y * baseGravity) * 2) * playerRb.mass;
+            if (IsGrounded)
+            {
+                jumpVector = jumpMult * (moveInput.x == 0 ? -groundVector : (-groundVector + moveInput).normalized);
+                playerRb.AddForce(jumpVector, ForceMode2D.Impulse);
+            }
+
+            // Wall Jump Functionality in Progress
+            // else if (IsOnLeftWall || IsOnRightWall)
+            // {
+            //     Vector2 sideDir = Vector2.zero;
+            //     if (IsOnLeftWall) sideDir += Vector2.left;
+            //     if (IsOnRightWall) sideDir += Vector2.right;
+
+            //     JustWallJumped = true;
+            //     jumpVector = 0.5f * jumpMult * (-groundVector - sideDir).normalized;
+            //     playerRb.AddForce(jumpVector, ForceMode2D.Impulse);
+            // }
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    public void OnGravityToggle(InputAction.CallbackContext context)
     {
-        if (other.CompareTag("GrowPowerup"))
+        if (context.phase == InputActionPhase.Started)
         {
-            transform.localScale = transform.localScale.x < 2 ? new Vector3(2, 2, 1) : transform.localScale;
-            Debug.Log("Grow Activated");
-        }
-        if (other.CompareTag("ShrinkPowerup"))
-        {
-            transform.localScale = transform.localScale.x > 0.5 ? new Vector3(0.5f, 0.5f, 1): transform.localScale;
-            Debug.Log("Shrink Activated");
-        }
+            IsGrounded = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, 0, groundVector, 0.05f, playerLayerMask);
 
-        if (other.CompareTag("Trap"))
-        {
-            // Change the scene to the Game Over screen
-            SceneManager.LoadScene("GameOver");
+            int otherPlayerLayerMask = 1 << otherPlayer.layer;
+            Vector3 otherPlayerSize = otherPlayer.GetComponent<Collider2D>().bounds.size;
+            bool otherPlayerGrounded = Physics2D.BoxCast(otherPlayer.transform.position, otherPlayerSize, 0, -groundVector, 0.05f, otherPlayerLayerMask);
+
+            if (IsGrounded || otherPlayerGrounded)
+            {
+                playerRb.gravityScale *= -1;
+                groundVector *= -1;
+            }
         }
     }
 }

@@ -10,10 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 7765269795797032577}
   - component: {fileID: 3076802155708411827}
-  - component: {fileID: 8094986925230927311}
+  - component: {fileID: 3184587884732083128}
   - component: {fileID: 7318148024906526806}
   - component: {fileID: 4227824299409151822}
   - component: {fileID: 3836861201955689691}
+  - component: {fileID: 6334069443707586386}
+  - component: {fileID: 4205529251292387472}
   m_Layer: 7
   m_Name: Player2_K
   m_TagString: Player
@@ -88,7 +90,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8094986925230927311
+--- !u!114 &3184587884732083128
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,10 +102,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7b93bcb315545843b5692fa4aadecd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveVal: 0
-  moveSpeed: 5
-  jumpImpulse: 5
-  otherPlayer: {fileID: 0}
+  moveInput: {x: 0, y: 0}
+  moveSpeed: 10
+  jumpHeight: 4
+  maxFallSpeed: 25
+  wallSlideSlow: 0.1
+  baseGravity: 2
+  fallGravityMultiplier: 3
+  airAdjustMultiplier: 0.2
   IsGrounded: 0
   IsOnLeftWall: 0
   IsOnRightWall: 0
@@ -168,16 +174,16 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: -1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: a3c1c40c654c7bd418b45f60b8ce8bb8, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &3836861201955689691
 MonoBehaviour:
@@ -192,7 +198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: 663070d8bc6d3a848bb9745dea20efd3, type: 3}
-  m_NotificationBehavior: 0
+  m_NotificationBehavior: 2
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
@@ -203,9 +209,81 @@ MonoBehaviour:
   m_ControlsChangedEvent:
     m_PersistentCalls:
       m_Calls: []
-  m_ActionEvents: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3184587884732083128}
+        m_TargetAssemblyTypeName: PlayerController_K, Assembly-CSharp
+        m_MethodName: OnMove
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: c4256b3c-9970-425a-9ae1-9cf3931131b2
+    m_ActionName: Player/Move[/Keyboard/leftArrow,/Keyboard/rightArrow]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3184587884732083128}
+        m_TargetAssemblyTypeName: PlayerController_K, Assembly-CSharp
+        m_MethodName: OnJump
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 58be105e-a29f-4150-8f38-67aebcb872bc
+    m_ActionName: Player/Jump[/Keyboard/upArrow]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3184587884732083128}
+        m_TargetAssemblyTypeName: PlayerController_K, Assembly-CSharp
+        m_MethodName: OnGravityToggle
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 0c23875e-1e0d-4933-91bb-0d222738cd1d
+    m_ActionName: Player/Gravity Toggle[/Keyboard/shift]
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: Keyboard&Mouse
+  m_DefaultControlScheme: 
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &6334069443707586386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7309211503970674130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fa9fbc9387cdb54bb24a0f8d73948aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4205529251292387472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7309211503970674130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1f49d3151b381b48bb45a04baa0b2e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

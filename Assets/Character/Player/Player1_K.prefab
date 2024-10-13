@@ -10,10 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 1252570591046465859}
   - component: {fileID: 5817296535700461068}
-  - component: {fileID: 1393106726733057793}
+  - component: {fileID: 4994858125252987924}
   - component: {fileID: 3325885129137046990}
   - component: {fileID: 8490586528768771694}
   - component: {fileID: 8066149824018906650}
+  - component: {fileID: 3436371973035648556}
+  - component: {fileID: 195129135234061898}
   m_Layer: 6
   m_Name: Player1_K
   m_TagString: Player
@@ -88,7 +90,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1393106726733057793
+--- !u!114 &4994858125252987924
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,10 +102,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7b93bcb315545843b5692fa4aadecd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveVal: 0
-  moveSpeed: 5
-  jumpImpulse: 5
-  otherPlayer: {fileID: 0}
+  moveInput: {x: 0, y: 0}
+  moveSpeed: 10
+  jumpHeight: 4
+  maxFallSpeed: 25
+  wallSlideSlow: 0.1
+  baseGravity: 2
+  fallGravityMultiplier: 3
+  airAdjustMultiplier: 0.2
   IsGrounded: 0
   IsOnLeftWall: 0
   IsOnRightWall: 0
@@ -168,16 +174,16 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: a3c1c40c654c7bd418b45f60b8ce8bb8, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &8066149824018906650
 MonoBehaviour:
@@ -192,7 +198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: cf2b27dcb0488274495ad3cf8596501e, type: 3}
-  m_NotificationBehavior: 0
+  m_NotificationBehavior: 2
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
@@ -203,9 +209,81 @@ MonoBehaviour:
   m_ControlsChangedEvent:
     m_PersistentCalls:
       m_Calls: []
-  m_ActionEvents: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4994858125252987924}
+        m_TargetAssemblyTypeName: PlayerController_K, Assembly-CSharp
+        m_MethodName: OnMove
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: cba9180d-6879-452a-a5ed-f1000dbeff20
+    m_ActionName: Player/Move[/Keyboard/a,/Keyboard/d]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4994858125252987924}
+        m_TargetAssemblyTypeName: PlayerController_K, Assembly-CSharp
+        m_MethodName: OnJump
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: c72f6022-1833-4650-8900-297983928a10
+    m_ActionName: Player/Jump[/Keyboard/w]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4994858125252987924}
+        m_TargetAssemblyTypeName: PlayerController_K, Assembly-CSharp
+        m_MethodName: OnGravityToggle
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: c583056b-da40-4d37-a8b6-83652c6183d3
+    m_ActionName: Player/Gravity Toggle[/Keyboard/shift]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &3436371973035648556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435797838081518462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fa9fbc9387cdb54bb24a0f8d73948aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &195129135234061898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435797838081518462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1f49d3151b381b48bb45a04baa0b2e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
