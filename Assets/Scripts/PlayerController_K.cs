@@ -7,15 +7,14 @@ public class PlayerController_K : MonoBehaviour
     
     [Range(1, 20)] public float moveSpeed = 10;
     [Range(1, 10)] public float jumpHeight = 4;
-    [Range(1, 100)] public float maxFallSpeed = 50;
+    [Range(1, 100)] public float maxFallSpeed = 25;
     [Range(0, 1)] public float wallSlideSlow = 0.1f;
     [Range(1, 10)] public float baseGravity = 1;
     [Range(1, 10)] public float fallGravityMultiplier = 1;
-
     [Range(0, 1)] public float airAdjustMultiplier = 0.2f;
 
     private Rigidbody2D playerRb;
-    private GameObject otherPlayer;
+    public GameObject OtherPlayer { get; private set; }
 
     private Collider2D playerCollider;
     private int playerLayerMask;
@@ -37,7 +36,7 @@ public class PlayerController_K : MonoBehaviour
         GameObject[] playerList = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject playerObj in playerList)
         {
-            if (playerObj.name != name) otherPlayer = playerObj;
+            if (playerObj.name != name) OtherPlayer = playerObj;
         }
     }
 
@@ -117,9 +116,9 @@ public class PlayerController_K : MonoBehaviour
         {
             IsGrounded = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, 0, groundVector, 0.05f, playerLayerMask);
 
-            int otherPlayerLayerMask = 1 << otherPlayer.layer;
-            Vector3 otherPlayerSize = otherPlayer.GetComponent<Collider2D>().bounds.size;
-            bool otherPlayerGrounded = Physics2D.BoxCast(otherPlayer.transform.position, otherPlayerSize, 0, -groundVector, 0.05f, otherPlayerLayerMask);
+            int otherPlayerLayerMask = 1 << OtherPlayer.layer;
+            Vector3 otherPlayerSize = OtherPlayer.GetComponent<Collider2D>().bounds.size;
+            bool otherPlayerGrounded = Physics2D.BoxCast(OtherPlayer.transform.position, otherPlayerSize, 0, -groundVector, 0.05f, otherPlayerLayerMask);
 
             if (IsGrounded || otherPlayerGrounded)
             {

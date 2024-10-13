@@ -19,73 +19,61 @@ public class SizeChange : MonoBehaviour
     // }
 
 
-    public GameObject otherPlayer; // Reference to the other player
-    public float effectDuration = 10f; // Public duration for how long the effect should last
+    public float effectDuration = 5f; // Public duration for how long the effect should last
+    public float sizeChangeValue = 1;
 
-    private Vector3 originalSize; // Store the original size of this player
-    private Vector3 otherPlayerOriginalSize; // Store the original size of the other player
-
-    private void Start()
+    void Start()
     {
-        // Store the original sizes at the start
-        originalSize = transform.localScale;
-        otherPlayerOriginalSize = otherPlayer.transform.localScale;
+        transform.localScale *= sizeChangeValue;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         // Grow powerup logic
-        if (other.CompareTag("GrowPowerup"))
+        if (other.CompareTag("Player"))
         {
-            // Increase this player's size
-            transform.localScale = new Vector3(2, 2, 1);
-            Debug.Log("Grow Activated");
+            GameObject mainPlayer = other.gameObject;
+            GameObject otherPlayer = mainPlayer.GetComponent<PlayerController_K>().OtherPlayer;
 
-            // Decrease the other player's size
-            if (otherPlayer != null)
-            {
-                otherPlayer.transform.localScale = new Vector3(0.5f, 0.5f, 1);
-                Debug.Log("Other Player Shrink Activated");
-            }
+            // Change player sizes and stats in opposite ways
+            Debug.Log("Size Change Activated");
 
-            // Start the coroutine to revert sizes after effectDuration
-            StartCoroutine(RevertSizesAfterTime());
-        }
+            mainPlayer.transform.localScale *= sizeChangeValue;
+            mainPlayer.GetComponent<PlayerController_K>().baseGravity /= sizeChangeValue;
+            mainPlayer.GetComponent<PlayerController_K>().maxFallSpeed /= sizeChangeValue;
+            mainPlayer.GetComponent<PlayerController_K>().moveSpeed /= sizeChangeValue;
 
-        // Shrink powerup logic
-        if (other.CompareTag("ShrinkPowerup"))
-        {
-            // Decrease this player's size
-            transform.localScale = new Vector3(0.5f, 0.5f, 1);
-            Debug.Log("Shrink Activated");
+            otherPlayer.transform.localScale /= sizeChangeValue;
+            otherPlayer.GetComponent<PlayerController_K>().baseGravity *= sizeChangeValue;
+            otherPlayer.GetComponent<PlayerController_K>().maxFallSpeed *= sizeChangeValue;
+            otherPlayer.GetComponent<PlayerController_K>().moveSpeed *= sizeChangeValue;
 
-            // Increase the other player's size
-            if (otherPlayer != null)
-            {
-                otherPlayer.transform.localScale = new Vector3(2, 2, 1);
-                Debug.Log("Other Player Grow Activated");
-            }
-
-            // Start the coroutine to revert sizes after effectDuration
-            StartCoroutine(RevertSizesAfterTime());
+            // Start the coroutine to revert sizes after effectDuration and destroy powerup
+            StartCoroutine(RevertSizesAfterTime(mainPlayer, otherPlayer));
         }
     }
 
     // To revert the size changes after the specified effect duration
-    private IEnumerator RevertSizesAfterTime()
+    private IEnumerator RevertSizesAfterTime(GameObject mainPlayer, GameObject otherPlayer)
     {
-        // Wait for the effect duration to complete
+        // Disable powerup collider and make it invisible
+        GetComponent<Collider2D>().enabled = false;
+        GetComponent<SpriteRenderer>().enabled = false;
+
         yield return new WaitForSeconds(effectDuration);
 
-        // Revert both players to their original sizes
-        transform.localScale = originalSize;
-        if (otherPlayer != null)
-        {
-            otherPlayer.transform.localScale = otherPlayerOriginalSize;
-        }
+        // Revert both players to their original sizes and stats
+        mainPlayer.transform.localScale /= sizeChangeValue;
+        mainPlayer.GetComponent<PlayerController_K>().baseGravity *= sizeChangeValue;
+        mainPlayer.GetComponent<PlayerController_K>().maxFallSpeed *= sizeChangeValue;
+        mainPlayer.GetComponent<PlayerController_K>().moveSpeed *= sizeChangeValue;
+
+        otherPlayer.transform.localScale *= sizeChangeValue;
+        otherPlayer.GetComponent<PlayerController_K>().baseGravity /= sizeChangeValue;
+        otherPlayer.GetComponent<PlayerController_K>().maxFallSpeed /= sizeChangeValue;
+        otherPlayer.GetComponent<PlayerController_K>().moveSpeed /= sizeChangeValue;
 
         Debug.Log("Size Reverted");
+        Destroy(gameObject);
     }
-
-
 }

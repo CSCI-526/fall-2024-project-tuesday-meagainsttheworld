@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 7318148024906526806}
   - component: {fileID: 4227824299409151822}
   - component: {fileID: 3836861201955689691}
-  - component: {fileID: 6334069443707586386}
   - component: {fileID: 4205529251292387472}
   m_Layer: 7
   m_Name: Player2_K
@@ -110,6 +109,7 @@ MonoBehaviour:
   baseGravity: 2
   fallGravityMultiplier: 3
   airAdjustMultiplier: 0.2
+  otherPlayer: {fileID: 0}
   IsGrounded: 0
   IsOnLeftWall: 0
   IsOnRightWall: 0
@@ -263,18 +263,6 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &6334069443707586386
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7309211503970674130}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6fa9fbc9387cdb54bb24a0f8d73948aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4205529251292387472
 MonoBehaviour:
   m_ObjectHideFlags: 0
