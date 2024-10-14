@@ -13,6 +13,10 @@ public class PlayerController_K : MonoBehaviour
     [Range(1, 10)] public float fallGravityMultiplier = 1;
     [Range(0, 1)] public float airAdjustMultiplier = 0.2f;
 
+    [SerializeField] private InputAction moveAction;
+    [SerializeField] private InputAction jumpAction;
+    [SerializeField] private InputAction gravityToggleAction;
+
     private Rigidbody2D playerRb;
     public GameObject OtherPlayer { get; private set; }
 
@@ -28,6 +32,17 @@ public class PlayerController_K : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        moveAction.Enable();
+        jumpAction.Enable();
+        gravityToggleAction.Enable();
+
+
+        moveAction.started += OnMove;
+        moveAction.canceled += OnMove;
+        moveAction.performed += OnMove;
+        jumpAction.started += OnJump;
+        gravityToggleAction.started += OnGravityToggle;
+
         playerRb = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<Collider2D>();
         playerLayerMask = 1 << gameObject.layer;
@@ -80,12 +95,12 @@ public class PlayerController_K : MonoBehaviour
         }
     }
 
-    public void OnMove(InputAction.CallbackContext context)
+    private void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
     }
 
-    public void OnJump(InputAction.CallbackContext context)
+    private void OnJump(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Started)
         {
@@ -110,7 +125,7 @@ public class PlayerController_K : MonoBehaviour
         }
     }
 
-    public void OnGravityToggle(InputAction.CallbackContext context)
+    private void OnGravityToggle(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Started)
         {
