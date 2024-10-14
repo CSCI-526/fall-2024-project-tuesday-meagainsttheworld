@@ -32,17 +32,6 @@ public class PlayerController_K : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        moveAction.Enable();
-        jumpAction.Enable();
-        gravityToggleAction.Enable();
-
-
-        moveAction.started += OnMove;
-        moveAction.canceled += OnMove;
-        moveAction.performed += OnMove;
-        jumpAction.started += OnJump;
-        gravityToggleAction.started += OnGravityToggle;
-
         playerRb = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<Collider2D>();
         playerLayerMask = 1 << gameObject.layer;
@@ -53,6 +42,32 @@ public class PlayerController_K : MonoBehaviour
         {
             if (playerObj.name != name) OtherPlayer = playerObj;
         }
+    }
+
+    void OnEnable()
+    {
+        moveAction.Enable();
+        jumpAction.Enable();
+        gravityToggleAction.Enable();
+
+        moveAction.started += OnMove;
+        moveAction.canceled += OnMove;
+        moveAction.performed += OnMove;
+        jumpAction.started += OnJump;
+        gravityToggleAction.started += OnGravityToggle;
+    }
+
+    void OnDisable()
+    {
+        moveAction.started -= OnMove;
+        moveAction.canceled -= OnMove;
+        moveAction.performed -= OnMove;
+        jumpAction.started -= OnJump;
+        gravityToggleAction.started -= OnGravityToggle;
+        
+        moveAction.Disable();
+        jumpAction.Disable();
+        gravityToggleAction.Disable();
     }
 
     // Update is called once per frame
