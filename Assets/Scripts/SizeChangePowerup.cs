@@ -16,29 +16,29 @@ public class SizeChange : MonoBehaviour
         // Grow powerup logic
         if (other.CompareTag("Player"))
         {
-            GameObject mainPlayer = other.gameObject;
-            GameObject otherPlayer = mainPlayer.GetComponent<PlayerController_K>().OtherPlayer;
+            PlayerController mainStats = other.gameObject.GetComponent<PlayerController>();
+            PlayerController otherStats = mainStats.OtherPlayer.GetComponent<PlayerController>();
 
             // Change player sizes and stats in opposite ways
             Debug.Log("Size Change Activated");
 
-            mainPlayer.transform.localScale *= sizeChangeValue;
-            mainPlayer.GetComponent<PlayerController_K>().baseGravity /= sizeChangeValue;
-            mainPlayer.GetComponent<PlayerController_K>().maxFallSpeed /= sizeChangeValue;
-            mainPlayer.GetComponent<PlayerController_K>().moveSpeed /= sizeChangeValue;
+            mainStats.gameObject.transform.localScale *= sizeChangeValue;
+            mainStats.baseGravity /= sizeChangeValue;
+            mainStats.maxFallSpeed /= sizeChangeValue;
+            mainStats.moveSpeed /= sizeChangeValue;
 
-            otherPlayer.transform.localScale /= sizeChangeValue;
-            otherPlayer.GetComponent<PlayerController_K>().baseGravity *= sizeChangeValue;
-            otherPlayer.GetComponent<PlayerController_K>().maxFallSpeed *= sizeChangeValue;
-            otherPlayer.GetComponent<PlayerController_K>().moveSpeed *= sizeChangeValue;
+            otherStats.gameObject.transform.localScale /= sizeChangeValue;
+            otherStats.baseGravity *= sizeChangeValue;
+            otherStats.maxFallSpeed *= sizeChangeValue;
+            otherStats.moveSpeed *= sizeChangeValue;
 
             // Start the coroutine to revert sizes after effectDuration and destroy powerup
-            StartCoroutine(RevertSizesAfterTime(mainPlayer, otherPlayer));
+            StartCoroutine(RevertSizesAfterTime(mainStats, otherStats));
         }
     }
 
     // To revert the size changes after the specified effect duration
-    private IEnumerator RevertSizesAfterTime(GameObject mainPlayer, GameObject otherPlayer)
+    private IEnumerator RevertSizesAfterTime(PlayerController mainStats, PlayerController otherStats)
     {
         // Disable powerup collider and make it invisible
         GetComponent<Collider2D>().enabled = false;
@@ -47,15 +47,15 @@ public class SizeChange : MonoBehaviour
         yield return new WaitForSeconds(effectDuration);
 
         // Revert both players to their original sizes and stats
-        mainPlayer.transform.localScale /= sizeChangeValue;
-        mainPlayer.GetComponent<PlayerController_K>().baseGravity *= sizeChangeValue;
-        mainPlayer.GetComponent<PlayerController_K>().maxFallSpeed *= sizeChangeValue;
-        mainPlayer.GetComponent<PlayerController_K>().moveSpeed *= sizeChangeValue;
+        mainStats.gameObject.transform.localScale /= sizeChangeValue;
+        mainStats.baseGravity *= sizeChangeValue;
+        mainStats.maxFallSpeed *= sizeChangeValue;
+        mainStats.moveSpeed *= sizeChangeValue;
 
-        otherPlayer.transform.localScale *= sizeChangeValue;
-        otherPlayer.GetComponent<PlayerController_K>().baseGravity /= sizeChangeValue;
-        otherPlayer.GetComponent<PlayerController_K>().maxFallSpeed /= sizeChangeValue;
-        otherPlayer.GetComponent<PlayerController_K>().moveSpeed /= sizeChangeValue;
+        otherStats.gameObject.transform.localScale *= sizeChangeValue;
+        otherStats.baseGravity /= sizeChangeValue;
+        otherStats.maxFallSpeed /= sizeChangeValue;
+        otherStats.moveSpeed /= sizeChangeValue;
 
         Debug.Log("Size Reverted");
         Destroy(gameObject);

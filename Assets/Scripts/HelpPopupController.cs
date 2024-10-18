@@ -10,6 +10,8 @@ public class HelpPopupController : MonoBehaviour
 
     private bool isPopupVisible = false;
 
+    public static bool isPaused = false;
+
     void Start()
     {
         // Ensure the popup is hidden initially
@@ -54,13 +56,13 @@ public class HelpPopupController : MonoBehaviour
             ToggleHelpPopup();
         }
         // Check if the Enter key is pressed
-        if (Input.GetKeyDown(KeyCode.Return)) // KeyCode.Return corresponds to the Enter key
+        if (Input.GetKeyDown(KeyCode.Return) && isPopupVisible) // KeyCode.Return corresponds to the Enter key
         {
             ResumeGame();
             // Load the specified scene
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
-        if (Input.GetKeyDown(KeyCode.M)) // KeyCode.M corresponds to the m/M key
+        if (Input.GetKeyDown(KeyCode.M) && isPopupVisible) // KeyCode.M corresponds to the m/M key
         {
             ResumeGame();
             // Load the specified scene
@@ -104,12 +106,14 @@ public class HelpPopupController : MonoBehaviour
     // Pause the game
     private void PauseGame()
     {
-        Time.timeScale = 0f; // Stop time
+        Time.timeScale = 0; // Stop time
+        isPaused = true;
     }
 
     // Resume the game
     private void ResumeGame()
     {
-        Time.timeScale = 1f; // Resume time
+        Time.timeScale = 1; // Resume time
+        isPaused = false;
     }
 }

@@ -1,10 +1,10 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController_K : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Vector2 moveInput;
-    
     [Range(1, 20)] public float moveSpeed = 10;
     [Range(1, 10)] public float jumpHeight = 4;
     [Range(1, 100)] public float maxFallSpeed = 25;
@@ -23,7 +23,6 @@ public class PlayerController_K : MonoBehaviour
     private Collider2D playerCollider;
     private int playerLayerMask;
     private Vector2 groundVector = Vector2.down;
-    private Vector2 jumpVector = Vector2.zero;
 
     [SerializeField] private bool IsGrounded = true;
     [SerializeField] private bool IsOnLeftWall = false;
@@ -64,7 +63,7 @@ public class PlayerController_K : MonoBehaviour
         moveAction.performed -= OnMove;
         jumpAction.started -= OnJump;
         gravityToggleAction.started -= OnGravityToggle;
-        
+
         moveAction.Disable();
         jumpAction.Disable();
         gravityToggleAction.Disable();
@@ -76,7 +75,7 @@ public class PlayerController_K : MonoBehaviour
         IsGrounded = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, 0, groundVector, 0.05f, playerLayerMask);
         IsOnLeftWall = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, 0, Vector2.left, 0.05f, playerLayerMask);
         IsOnRightWall = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, 0, Vector2.right, 0.05f, playerLayerMask);
-        
+
         if (playerRb.velocity.y * groundVector.y > maxFallSpeed) playerRb.gravityScale = 0;
         else
         {
@@ -112,18 +111,20 @@ public class PlayerController_K : MonoBehaviour
 
     private void OnMove(InputAction.CallbackContext context)
     {
+        if (HelpPopupController.isPaused) return;
         moveInput = context.ReadValue<Vector2>();
     }
 
     private void OnJump(InputAction.CallbackContext context)
     {
+        if (HelpPopupController.isPaused) return;
         if (context.phase == InputActionPhase.Started)
         {
             float jumpMult = Mathf.Sqrt(jumpHeight * Mathf.Abs(Physics2D.gravity.y * baseGravity) * 2) * playerRb.mass;
             if (IsGrounded)
             {
-                jumpVector = jumpMult * (moveInput.x == 0 ? -groundVector : (-groundVector + moveInput).normalized);
-                playerRb.AddForce(jumpVector, ForceMode2D.Impulse);
+                Vector2 jumpVec = jumpMult * (-groundVector + moveInput * 0.1f).normalized;
+                playerRb.AddForce(jumpVec, ForceMode2D.Impulse);
             }
 
             // Wall Jump Functionality in Progress
@@ -142,6 +143,7 @@ public class PlayerController_K : MonoBehaviour
 
     private void OnGravityToggle(InputAction.CallbackContext context)
     {
+        if (HelpPopupController.isPaused) return;
         if (context.phase == InputActionPhase.Started)
         {
             IsGrounded = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, 0, groundVector, 0.05f, playerLayerMask);

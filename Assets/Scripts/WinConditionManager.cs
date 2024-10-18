@@ -20,6 +20,7 @@ public class WinConditionManager : MonoBehaviour
             // If both players are in the win zone, change to the win screen
             if (playersInZone == 2)
             {
+                SceneSwitcher.lastLevel = SceneManager.GetActiveScene().name;
                 SceneManager.LoadScene("YouWin");
             }
         }

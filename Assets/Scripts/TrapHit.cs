@@ -8,6 +8,7 @@ public class TrapHit : MonoBehaviour
         if (other.CompareTag("Trap"))
         {
             // Change the scene to the Game Over screen
+            SceneSwitcher.lastLevel = SceneManager.GetActiveScene().name;
             SceneManager.LoadScene("GameOver");
         }
     }
