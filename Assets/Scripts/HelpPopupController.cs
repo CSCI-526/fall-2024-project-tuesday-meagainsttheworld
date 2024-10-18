@@ -14,15 +14,36 @@ public class HelpPopupController : MonoBehaviour
     {
         // Ensure the popup is hidden initially
         if (helpPopup != null)
+        {
             helpPopup.SetActive(false);
+            Debug.Log("Help popup found and set to inactive.");
+        }
+        else
+        {
+            Debug.LogError("Help popup is not assigned.");
+        }
 
         // Assign the OnHelpButtonClicked method to the button click event
         if (helpButton != null)
+        {
             helpButton.onClick.AddListener(OnHelpButtonClicked);
+            Debug.Log("Help button listener assigned.");
+        }
+        else
+        {
+            Debug.LogError("Help button is not assigned.");
+        }
 
         // Assign the OnCloseButtonClicked method to the close button click event
         if (closeButton != null)
+        {
             closeButton.onClick.AddListener(OnCloseButtonClicked);
+            Debug.Log("Close button listener assigned.");
+        }
+        else
+        {
+            Debug.LogError("Close button is not assigned.");
+        }
     }
 
     void Update()
@@ -39,7 +60,7 @@ public class HelpPopupController : MonoBehaviour
             // Load the specified scene
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
-        if (Input.GetKeyDown(KeyCode.M)) // KeyCode.Return corresponds to the Enter key
+        if (Input.GetKeyDown(KeyCode.M)) // KeyCode.M corresponds to the m/M key
         {
             ResumeGame();
             // Load the specified scene
@@ -50,12 +71,14 @@ public class HelpPopupController : MonoBehaviour
     // Method to handle button click
     private void OnHelpButtonClicked()
     {
+        Debug.Log("Help button clicked.");
         ToggleHelpPopup();
     }
 
     // Method to handle close button click
     private void OnCloseButtonClicked()
     {
+        Debug.Log("Close button clicked.");
         if (helpPopup != null)
             helpPopup.SetActive(false);
 
