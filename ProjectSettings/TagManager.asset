@@ -4,10 +4,9 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - ShrinkPowerup
-  - GrowPowerup
   - Trap
   - FinishLine
+  - Platform
   layers:
   - Default
   - TransparentFX

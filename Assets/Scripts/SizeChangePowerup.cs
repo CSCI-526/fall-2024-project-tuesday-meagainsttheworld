@@ -3,8 +3,9 @@ using System.Collections;
 
 public class SizeChange : MonoBehaviour
 {
-    public float effectDuration = 5f; // Public duration for how long the effect should last
-    public float sizeChangeValue = 1;
+    [SerializeField] private float effectDuration = 5f; // Public duration for how long the effect should last
+    [SerializeField] private float sizeChangeValue = 1;
+    [SerializeField] private bool regenerating = true;
 
     void Start()
     {
@@ -32,6 +33,21 @@ public class SizeChange : MonoBehaviour
             otherStats.maxFallSpeed *= sizeChangeValue;
             otherStats.moveSpeed *= sizeChangeValue;
 
+            if (sizeChangeValue > 1)
+            {
+                mainStats.jumpHeight *= sizeChangeValue;
+                mainStats.PlayerRb.mass *= sizeChangeValue * 100;
+                
+                otherStats.PlayerRb.mass /= sizeChangeValue * 100;
+            }
+            else
+            {
+                mainStats.PlayerRb.mass /= sizeChangeValue * 100;
+
+                otherStats.jumpHeight *= sizeChangeValue;
+                otherStats.PlayerRb.mass *= sizeChangeValue * 100;
+            }
+
             // Start the coroutine to revert sizes after effectDuration and destroy powerup
             StartCoroutine(RevertSizesAfterTime(mainStats, otherStats));
         }
@@ -57,7 +73,27 @@ public class SizeChange : MonoBehaviour
         otherStats.maxFallSpeed /= sizeChangeValue;
         otherStats.moveSpeed /= sizeChangeValue;
 
+        if (sizeChangeValue > 1)
+            {
+                mainStats.jumpHeight /= sizeChangeValue;
+                mainStats.PlayerRb.mass /= sizeChangeValue * 100;
+                
+                otherStats.PlayerRb.mass *= sizeChangeValue * 100;
+            }
+            else
+            {
+                mainStats.PlayerRb.mass *= sizeChangeValue * 100;
+
+                otherStats.jumpHeight /= sizeChangeValue;
+                otherStats.PlayerRb.mass /= sizeChangeValue * 100;
+            }
+
         Debug.Log("Size Reverted");
-        Destroy(gameObject);
+        if (regenerating)
+        {
+            GetComponent<Collider2D>().enabled = true;
+            GetComponent<SpriteRenderer>().enabled = true;
+        }
+        else Destroy(gameObject);
     }
 }

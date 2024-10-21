@@ -31,8 +31,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -7.5, y: -5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -102,11 +102,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveInput: {x: 0, y: 0}
   moveSpeed: 10
-  jumpHeight: 3
+  jumpHeight: 3.15
   maxFallSpeed: 25
   wallSlideSlow: 0.1
   baseGravity: 2
   fallGravityMultiplier: 3
+  speedSustain: 0.1
   airAdjustMultiplier: 0.2
   moveAction:
     m_Name: Move
@@ -175,9 +176,11 @@ MonoBehaviour:
       m_Action: Gravity Toggle
       m_Flags: 0
     m_Flags: 0
-  IsGrounded: 0
-  IsOnLeftWall: 0
-  IsOnRightWall: 0
+  isGrounded: 0
+  isOnLeftWall: 0
+  isOnRightWall: 0
+  isOnPlatform: 0
+  goingAgainstWall: 0
 --- !u!61 &3325885129137046990
 BoxCollider2D:
   m_ObjectHideFlags: 0
