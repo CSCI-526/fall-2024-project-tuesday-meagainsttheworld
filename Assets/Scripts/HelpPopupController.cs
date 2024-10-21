@@ -1,12 +1,9 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class HelpPopupController : MonoBehaviour
 {
     [SerializeField] private GameObject helpPopup;
-    [SerializeField] private Button helpButton;
-    [SerializeField] private Button closeButton;
 
     private bool isPopupVisible = false;
 
@@ -23,28 +20,6 @@ public class HelpPopupController : MonoBehaviour
         else
         {
             Debug.LogError("Help popup is not assigned.");
-        }
-
-        // Assign the OnHelpButtonClicked method to the button click event
-        if (helpButton != null)
-        {
-            helpButton.onClick.AddListener(OnHelpButtonClicked);
-            Debug.Log("Help button listener assigned.");
-        }
-        else
-        {
-            Debug.LogError("Help button is not assigned.");
-        }
-
-        // Assign the OnCloseButtonClicked method to the close button click event
-        if (closeButton != null)
-        {
-            closeButton.onClick.AddListener(OnCloseButtonClicked);
-            Debug.Log("Close button listener assigned.");
-        }
-        else
-        {
-            Debug.LogError("Close button is not assigned.");
         }
     }
 
@@ -71,14 +46,14 @@ public class HelpPopupController : MonoBehaviour
     }
 
     // Method to handle button click
-    private void OnHelpButtonClicked()
+    public void OnHelpButtonClicked()
     {
         Debug.Log("Help button clicked.");
         ToggleHelpPopup();
     }
 
     // Method to handle close button click
-    private void OnCloseButtonClicked()
+    public void OnCloseButtonClicked()
     {
         Debug.Log("Close button clicked.");
         if (helpPopup != null)
