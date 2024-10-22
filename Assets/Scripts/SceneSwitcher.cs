@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,8 @@ public class SceneSwitcher : MonoBehaviour
 
     void Start()
     {
+        if (string.IsNullOrEmpty(DataCollection.sessionID)) DataCollection.sessionID = DateTime.Now.Ticks.ToString();
+
         if (SceneManager.GetActiveScene().name == "YouWin")
         {
             if (lastLevel != "Level2") enterText.GetComponent<TextMeshProUGUI>().text = "Press 'ENTER' to go to next level";

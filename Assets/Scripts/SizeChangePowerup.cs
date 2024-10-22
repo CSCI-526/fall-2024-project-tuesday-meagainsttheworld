@@ -24,29 +24,19 @@ public class SizeChange : MonoBehaviour
             Debug.Log("Size Change Activated");
 
             mainStats.gameObject.transform.localScale *= sizeChangeValue;
+            mainStats.PlayerRb.mass *= sizeChangeValue * 100;
             mainStats.baseGravity /= sizeChangeValue;
             mainStats.maxFallSpeed /= sizeChangeValue;
             mainStats.moveSpeed /= sizeChangeValue;
 
             otherStats.gameObject.transform.localScale /= sizeChangeValue;
+            otherStats.PlayerRb.mass /= sizeChangeValue * 100;
             otherStats.baseGravity *= sizeChangeValue;
             otherStats.maxFallSpeed *= sizeChangeValue;
             otherStats.moveSpeed *= sizeChangeValue;
 
-            if (sizeChangeValue > 1)
-            {
-                mainStats.jumpHeight *= sizeChangeValue;
-                mainStats.PlayerRb.mass *= sizeChangeValue * 100;
-                
-                otherStats.PlayerRb.mass /= sizeChangeValue * 100;
-            }
-            else
-            {
-                mainStats.PlayerRb.mass /= sizeChangeValue * 100;
-
-                otherStats.jumpHeight *= sizeChangeValue;
-                otherStats.PlayerRb.mass *= sizeChangeValue * 100;
-            }
+            if (sizeChangeValue > 1) mainStats.jumpHeight *= sizeChangeValue;
+            else otherStats.jumpHeight /= sizeChangeValue;
 
             // Start the coroutine to revert sizes after effectDuration and destroy powerup
             StartCoroutine(RevertSizesAfterTime(mainStats, otherStats));
@@ -64,29 +54,19 @@ public class SizeChange : MonoBehaviour
 
         // Revert both players to their original sizes and stats
         mainStats.gameObject.transform.localScale /= sizeChangeValue;
+        mainStats.PlayerRb.mass /= sizeChangeValue * 100;
         mainStats.baseGravity *= sizeChangeValue;
         mainStats.maxFallSpeed *= sizeChangeValue;
         mainStats.moveSpeed *= sizeChangeValue;
 
         otherStats.gameObject.transform.localScale *= sizeChangeValue;
+        otherStats.PlayerRb.mass *= sizeChangeValue * 100;
         otherStats.baseGravity /= sizeChangeValue;
         otherStats.maxFallSpeed /= sizeChangeValue;
         otherStats.moveSpeed /= sizeChangeValue;
 
-        if (sizeChangeValue > 1)
-            {
-                mainStats.jumpHeight /= sizeChangeValue;
-                mainStats.PlayerRb.mass /= sizeChangeValue * 100;
-                
-                otherStats.PlayerRb.mass *= sizeChangeValue * 100;
-            }
-            else
-            {
-                mainStats.PlayerRb.mass *= sizeChangeValue * 100;
-
-                otherStats.jumpHeight /= sizeChangeValue;
-                otherStats.PlayerRb.mass /= sizeChangeValue * 100;
-            }
+        if (sizeChangeValue > 1) mainStats.jumpHeight /= sizeChangeValue;
+        else otherStats.jumpHeight *= sizeChangeValue;
 
         Debug.Log("Size Reverted");
         if (regenerating)

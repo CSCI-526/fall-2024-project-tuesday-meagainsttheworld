@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -26,8 +27,7 @@ public class WinConditionManager : MonoBehaviour
                 // Debug.Log("Total Death Count for this run of " + SceneManager.GetActiveScene().name + ": " + entryCount);
                 // entryCount = 0;
 
-                SceneSwitcher.lastLevel = SceneManager.GetActiveScene().name;
-                SceneManager.LoadScene("YouWin");
+                StartCoroutine(WaitForWinScreen());
             }
         }
     }
@@ -41,5 +41,13 @@ public class WinConditionManager : MonoBehaviour
             Debug.Log("Player Exit");
             playersInZone--;
         }
+    }
+
+    private IEnumerator WaitForWinScreen()
+    {
+        yield return new WaitForSeconds(0.2f);
+
+        SceneSwitcher.lastLevel = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene("YouWin");
     }
 }
