@@ -8,6 +8,9 @@ public class DataCollection : MonoBehaviour
 
     public static async void Post(string URL, WWWForm form)
     {
+        // Prevent data from being sent while testing in Unity editor
+        if (Application.isEditor) return;
+
         // Send responses and verify result
         UnityWebRequest www = UnityWebRequest.Post(URL, form);
 
