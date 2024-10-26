@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,9 +17,22 @@ public class TrapHit : MonoBehaviour
             // Debug.Log("Death Scene: " + currentSceneName + ", Death Player Position: " + playerPosition + ", Deaths Count: " + WinConditionManager.entryCount);
             
             SendDeath();
-            SceneSwitcher.lastLevel = SceneManager.GetActiveScene().name;
-            SceneManager.LoadScene("GameOver");
+            StartCoroutine(PlayDeath());
         }
+    }
+
+    public IEnumerator PlayDeath()
+    {
+        GetComponent<Collider2D>().enabled = false;
+        GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+        GetComponent<TrailRenderer>().enabled = false;
+        GetComponent<SpriteRenderer>().enabled = false;
+        transform.GetChild(0).GetComponent<ParticleSystem>().Play();
+
+        yield return new WaitForSeconds(0.5f);
+
+        SceneSwitcher.lastLevel = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void SendDeath()
