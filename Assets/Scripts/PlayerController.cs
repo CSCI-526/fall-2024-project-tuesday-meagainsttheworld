@@ -19,24 +19,29 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private InputAction gravityToggleAction;
 
     public Rigidbody2D PlayerRb { get; private set; }
-    public GameObject OtherPlayer { get; private set; }
+    public TrailRenderer PlayerTrail { get; private set; }
+    public PlayerController OtherPlayer { get; private set; }
 
     private Collider2D playerCollider;
     private int playerLayerMask;
     private Vector2 groundVector = Vector2.down;
 
     private RaycastHit2D groundCast;
-    [SerializeField] private bool isGrounded = false;
+    [field: SerializeField] public bool IsGrounded { get; private set; }
     [SerializeField] private bool isOnLeftWall = false;
     [SerializeField] private bool isOnRightWall = false;
     [SerializeField] private bool isOnPlatform = false;
     [SerializeField] private bool goingAgainstWall = false;
+    [SerializeField] private bool justWallJumped = false;
+    [SerializeField] private float wallJumpForce = 0;
+    private int wallJumpDir = 0;
     private Rigidbody2D platformRb;
 
     // Start is called before the first frame update
     void Start()
     {
         PlayerRb = GetComponent<Rigidbody2D>();
+        PlayerTrail = GetComponent<TrailRenderer>();
         playerCollider = GetComponent<Collider2D>();
         playerLayerMask = 1 << gameObject.layer;
         groundVector *= PlayerRb.gravityScale;
@@ -45,7 +50,7 @@ public class PlayerController : MonoBehaviour
         GameObject[] playerList = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject playerObj in playerList)
         {
-            if (playerObj.name != name) OtherPlayer = playerObj;
+            if (playerObj.name != name) OtherPlayer = playerObj.GetComponent<PlayerController>();
         }
     }
 
@@ -59,6 +64,7 @@ public class PlayerController : MonoBehaviour
         moveAction.canceled += OnMove;
         moveAction.performed += OnMove;
         jumpAction.started += OnJump;
+        jumpAction.canceled += OnJump;
         gravityToggleAction.started += OnGravityToggle;
     }
 
@@ -68,6 +74,7 @@ public class PlayerController : MonoBehaviour
         moveAction.canceled -= OnMove;
         moveAction.performed -= OnMove;
         jumpAction.started -= OnJump;
+        jumpAction.canceled -= OnJump;
         gravityToggleAction.started -= OnGravityToggle;
 
         moveAction.Disable();
@@ -79,15 +86,18 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         groundCast = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, 0, groundVector, 0.05f, playerLayerMask);
-        isGrounded = groundCast;
-        isOnLeftWall = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, 0, Vector2.left, 0.2f, playerLayerMask);
-        isOnRightWall = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, 0, Vector2.right, 0.2f, playerLayerMask);
+        IsGrounded = groundCast;
+        isOnLeftWall = Physics2D.Raycast(transform.position, Vector2.left, 0.2f + transform.localScale.x * 0.5f, playerLayerMask);
+        isOnRightWall = Physics2D.Raycast(transform.position, Vector2.right, 0.2f + transform.localScale.x * 0.5f, playerLayerMask);
+
+        if (IsGrounded) justWallJumped = false;
+
         goingAgainstWall = (moveInput.x == -1 && isOnLeftWall) || (moveInput.x == 1 && isOnRightWall);
 
         if (PlayerRb.velocity.y * groundVector.y > maxFallSpeed) PlayerRb.gravityScale = 0;
         else
         {
-            if (PlayerRb.velocity.y * -groundVector.y >= 0) PlayerRb.gravityScale = baseGravity * -groundVector.y;
+            if (PlayerRb.velocity.y * -groundVector.y > 0) PlayerRb.gravityScale = baseGravity * -groundVector.y;
             else PlayerRb.gravityScale = fallGravityMultiplier * baseGravity * -groundVector.y;
         }
 
@@ -98,25 +108,28 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         // Horizontal Movement
-        if (moveInput.x != 0 || isGrounded)
+        if (moveInput.x != 0 || IsGrounded)
         {
             float velCheck = moveSpeed * moveInput.x;
-            
+
             // For relative velocity with respect to the platform the player is on
-            if ((isGrounded && groundCast.collider.CompareTag("Platform")) || (isOnPlatform && goingAgainstWall))
+            if ((IsGrounded && groundCast.collider.CompareTag("Platform")) || (isOnPlatform && goingAgainstWall))
             {
                 velCheck += platformRb.velocity.x;
             }
 
             float velDelta = velCheck - PlayerRb.velocity.x;
-            
+
             Vector2 forceReq = new(PlayerRb.mass * velDelta / Time.fixedDeltaTime, 0);
 
             // Conserving momentum from speed-up
             if (Math.Abs(platformRb.velocity.x - PlayerRb.velocity.x) > Math.Abs(moveSpeed)) forceReq *= speedSustain;
 
+            // Wall Jump direction change delay
+            if (justWallJumped && wallJumpDir != moveInput.x) forceReq *= wallJumpForce;
+
             // Mimic air drag
-            if (!isGrounded && !isOnPlatform) forceReq *= airAdjustMultiplier;
+            if (!IsGrounded) forceReq *= airAdjustMultiplier;
 
             PlayerRb.AddForce(forceReq);
         }
@@ -127,6 +140,19 @@ public class PlayerController : MonoBehaviour
             float velDelta = (maxFallSpeed * wallSlideSlow * groundVector.y) - PlayerRb.velocity.y;
             Vector2 forceReq = new(0, PlayerRb.mass * velDelta / Time.fixedDeltaTime);
             PlayerRb.AddForce(forceReq);
+        }
+
+        // Rotate in midair
+        if (!IsGrounded && !goingAgainstWall)
+        {
+            float rotateVal = Math.Abs(PlayerRb.velocity.x) < 0.1 * moveSpeed ? 0 : Math.Sign(PlayerRb.velocity.x);
+            PlayerRb.angularVelocity = rotateVal * groundVector.y * 180;
+        }
+
+        if (justWallJumped)
+        {
+            wallJumpForce = Mathf.Lerp(wallJumpForce, 1, 0.01f);
+            if (wallJumpForce > 0.5) justWallJumped = false;
         }
     }
 
@@ -159,24 +185,29 @@ public class PlayerController : MonoBehaviour
         if (context.phase == InputActionPhase.Started)
         {
             float jumpMult = Mathf.Sqrt(jumpHeight * Mathf.Abs(Physics2D.gravity.y * baseGravity) * 2) * PlayerRb.mass;
-            if (isGrounded)
+            if (IsGrounded)
             {
                 Vector2 jumpVec = jumpMult * -groundVector / Time.fixedDeltaTime;
-                PlayerRb.AddForce(jumpVec + platformRb.velocity);
+                PlayerRb.AddForce(jumpVec);
             }
+            else if (isOnLeftWall || isOnRightWall)
+            {
+                wallJumpDir = 0;
+                if (isOnLeftWall) wallJumpDir += 1;
+                if (isOnRightWall) wallJumpDir -= 1;
 
-            // Wall Jump Functionality in Progress
-            // else if (IsOnLeftWall || IsOnRightWall)
-            // {
-            //     Vector2 sideDir = Vector2.zero;
-            //     if (IsOnLeftWall) sideDir += Vector2.left;
-            //     if (IsOnRightWall) sideDir += Vector2.right;
-
-            //     JustWallJumped = true;
-            //     jumpVector = 0.5f * jumpMult * (-groundVector - sideDir).normalized;
-            //     playerRb.AddForce(jumpVector, ForceMode2D.Impulse);
-            // }
+                Vector2 jumpVec = 1.2f * jumpMult * (Quaternion.AngleAxis(wallJumpDir * 30, groundVector.y * Vector3.forward) * -groundVector) / Time.fixedDeltaTime;
+                PlayerRb.velocity = new(PlayerRb.velocity.x, 0);
+                PlayerRb.AddForce(jumpVec);
+                justWallJumped = true;
+                wallJumpForce = 0;
+            }
         }
+        // Jump Cancel in progress
+        // if (context.phase == InputActionPhase.Canceled)
+        // {
+
+        // }
     }
 
     private void OnGravityToggle(InputAction.CallbackContext context)
@@ -184,13 +215,7 @@ public class PlayerController : MonoBehaviour
         if (HelpPopupController.isPaused) return;
         if (context.phase == InputActionPhase.Started)
         {
-            isGrounded = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, 0, groundVector, 0.05f, playerLayerMask);
-
-            int otherPlayerLayerMask = 1 << OtherPlayer.layer;
-            Vector3 otherPlayerSize = OtherPlayer.GetComponent<Collider2D>().bounds.size;
-            bool otherPlayerGrounded = Physics2D.BoxCast(OtherPlayer.transform.position, otherPlayerSize, 0, -groundVector, 0.05f, otherPlayerLayerMask);
-
-            if (groundCast || otherPlayerGrounded)
+            if (IsGrounded || OtherPlayer.IsGrounded)
             {
                 PlayerRb.gravityScale *= -1;
                 groundVector *= -1;

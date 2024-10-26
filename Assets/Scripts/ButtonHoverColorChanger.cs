@@ -5,8 +5,8 @@ using TMPro;
 public class ButtonHoverColorChanger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
 {
     public TextMeshProUGUI buttonText;
-    public Color normalColor = Color.black;
-    public Color hoverColor = Color.red;
+    [SerializeField] private Color normalColor = Color.black;
+    [SerializeField] private Color hoverColor = Color.white;
     private bool isSelected = false;
 
     void Start()
