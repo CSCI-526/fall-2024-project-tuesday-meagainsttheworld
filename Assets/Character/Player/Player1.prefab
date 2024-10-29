@@ -105,12 +105,16 @@ MonoBehaviour:
   moveInput: {x: 0, y: 0}
   moveSpeed: 10
   jumpHeight: 3.15
+  wallJumpLerp: 0.0075
+  wallJumpRecoveryThreshold: 0.3
+  wallJumpRecovery: 0
   maxFallSpeed: 25
   wallSlideSlow: 0.1
   baseGravity: 2
   fallGravityMultiplier: 3
-  speedSustain: 0.1
+  momentumResist: 0.1
   airAdjustMultiplier: 0.2
+  airHangThreshold: 0.3
   moveAction:
     m_Name: Move
     m_Type: 0
@@ -184,7 +188,6 @@ MonoBehaviour:
   isOnPlatform: 0
   goingAgainstWall: 0
   justWallJumped: 0
-  wallJumpForce: 0
 --- !u!61 &3325885129137046990
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -256,7 +259,7 @@ Rigidbody2D:
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &195129135234061898
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,7 +280,7 @@ TrailRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 435797838081518462}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -399,7 +402,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6554408690517425377
 Transform:
   m_ObjectHideFlags: 0

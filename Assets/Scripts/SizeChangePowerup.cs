@@ -84,12 +84,14 @@ public class SizeChange : MonoBehaviour
     {
         mainStats.gameObject.transform.localScale *= mainSize;
         mainStats.PlayerTrail.widthMultiplier *= mainSize;
+        mainStats.transform.GetChild(0).localScale *= mainSize;
         mainStats.PlayerRb.mass *= mainSize * 100;
         mainStats.baseGravity /= mainSize;
         mainStats.maxFallSpeed /= mainSize;
         mainStats.moveSpeed /= mainSize;
 
         otherStats.gameObject.transform.localScale *= otherSize;
+        otherStats.transform.GetChild(0).localScale *= otherSize;
         otherStats.PlayerTrail.widthMultiplier *= otherSize;
         otherStats.PlayerRb.mass *= otherSize * 100;
         otherStats.baseGravity /= otherSize;
