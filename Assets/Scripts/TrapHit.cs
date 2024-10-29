@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class TrapHit : MonoBehaviour
 {
-    private readonly string deathCountURL = "https://docs.google.com/forms/u/1/d/e/1FAIpQLScErtwXtsd4chv4uG1cORolwI5USv1hmsTOUjnRWbbJHcGgrg/formResponse";
+    private readonly string deathCountURL = "https://docs.google.com/forms/d/e/1FAIpQLSd0XcbT8jZLLgnJI22RhSL7xweuyTPJfPwONQbg0C2zk805zA/formResponse";
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -50,6 +50,8 @@ public class TrapHit : MonoBehaviour
         form.AddField("entry.1621254126", transform.position.x.ToString());
         // Player Y coordinate at time of death
         form.AddField("entry.1068866632", transform.position.y.ToString());
+        // Current build name
+        form.AddField("entry.1014429915", 1);
 
         DataCollection.Post(deathCountURL, form);
     }
