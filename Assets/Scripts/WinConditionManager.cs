@@ -47,7 +47,7 @@ public class WinConditionManager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
 
-        SceneSwitcher.lastLevel = SceneManager.GetActiveScene().name;
+        SceneSwitcher.prevLevel = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene("YouWin");
     }
 }

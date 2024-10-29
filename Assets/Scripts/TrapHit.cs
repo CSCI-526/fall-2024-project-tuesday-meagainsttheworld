@@ -31,7 +31,7 @@ public class TrapHit : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        SceneSwitcher.lastLevel = SceneManager.GetActiveScene().name;
+        SceneSwitcher.prevLevel = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

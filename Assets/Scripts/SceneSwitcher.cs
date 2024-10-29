@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class SceneSwitcher : MonoBehaviour
 {
-    public static string lastLevel = "Level0";
+    public static string prevLevel = "Level0";
 
     [SerializeField] private GameObject enterText;
 
@@ -15,7 +15,7 @@ public class SceneSwitcher : MonoBehaviour
 
         if (SceneManager.GetActiveScene().name == "YouWin")
         {
-            if (lastLevel != "Level2") enterText.GetComponent<TextMeshProUGUI>().text = "Press 'ENTER' to go to next level";
+            if (prevLevel != "Level3") enterText.GetComponent<TextMeshProUGUI>().text = "Press 'ENTER' to go to next level";
             else enterText.GetComponent<TextMeshProUGUI>().text = "Press 'ENTER' to restart";
         }
     }
@@ -27,11 +27,11 @@ public class SceneSwitcher : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Return)) // KeyCode.Return corresponds to the Enter key
         {
             string sceneName = SceneManager.GetActiveScene().name;
-            if (sceneName == "GameOver") SceneManager.LoadScene(lastLevel);
+            if (sceneName == "GameOver") SceneManager.LoadScene(prevLevel);
             else if (sceneName == "YouWin")
             {
-                if (lastLevel == "Level0") SceneManager.LoadScene("Level1");
-                else if (lastLevel == "Level1") SceneManager.LoadScene("Level2");
+                int lastLevelNum = int.Parse(prevLevel[5..]);
+                if (lastLevelNum < 3) SceneManager.LoadScene(prevLevel[..5] + (lastLevelNum + 1).ToString());
                 else SceneManager.LoadScene("LevelsMenu");
             }
             else SceneManager.LoadScene("LevelsMenu");
