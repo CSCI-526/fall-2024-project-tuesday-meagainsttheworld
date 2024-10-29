@@ -24247,6 +24247,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2735678480585450654, guid: 11f9725db735bb64a814de68de110dff, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4988856860548131326, guid: 11f9725db735bb64a814de68de110dff, type: 3}
       propertyPath: m_Name
       value: Players
@@ -24290,6 +24294,30 @@ PrefabInstance:
     - target: {fileID: 7387308187348372725, guid: 11f9725db735bb64a814de68de110dff, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7953634842268344636, guid: 11f9725db735bb64a814de68de110dff, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7953634842268344636, guid: 11f9725db735bb64a814de68de110dff, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7953634842268344636, guid: 11f9725db735bb64a814de68de110dff, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8167881815039133228, guid: 11f9725db735bb64a814de68de110dff, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8167881815039133228, guid: 11f9725db735bb64a814de68de110dff, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8167881815039133228, guid: 11f9725db735bb64a814de68de110dff, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
