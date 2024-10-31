@@ -242,4 +242,9 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
+    public Vector2 GetPosition()
+    {
+        return transform.position;
+    }
 }
