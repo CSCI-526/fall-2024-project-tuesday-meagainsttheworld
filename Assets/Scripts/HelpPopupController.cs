@@ -15,7 +15,6 @@ public class HelpPopupController : MonoBehaviour
         if (helpPopup != null)
         {
             helpPopup.SetActive(false);
-            Debug.Log("Help popup found and set to inactive.");
         }
         else
         {

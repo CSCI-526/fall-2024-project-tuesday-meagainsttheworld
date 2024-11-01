@@ -27,6 +27,7 @@ public class TrapHit : MonoBehaviour
         GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
         GetComponent<TrailRenderer>().enabled = false;
         GetComponent<SpriteRenderer>().enabled = false;
+        transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
         transform.GetChild(0).GetComponent<ParticleSystem>().Play();
 
         yield return new WaitForSeconds(0.5f);
@@ -37,13 +38,15 @@ public class TrapHit : MonoBehaviour
 
     public void SendDeath()
     {
+        Debug.Log(name + " died at " + transform.position);
+
         // Create the form and enter responses
         WWWForm form = new();
         
         // Session ID
         form.AddField("entry.1554864013", DataCollection.sessionID);
         // Player ID
-        form.AddField("entry.298539410", gameObject.name);
+        form.AddField("entry.298539410", name);
         // Scene Name
         form.AddField("entry.1159607511", SceneManager.GetActiveScene().name);
         // Player X coordinate at time of death
