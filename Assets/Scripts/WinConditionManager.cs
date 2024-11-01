@@ -5,11 +5,6 @@ using UnityEngine.SceneManagement;
 public class WinConditionManager : MonoBehaviour
 {
     private int playersInZone = 0; // Counter for players in the win zone
-    //New Code from Ziang Qin: only for alpha Analytics
-    // public static int entryCount;
-
-    //New Code by Ziang Qin in Beta Phase
-    public GameManager gameManager; // Reference to the GameManager
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -22,16 +17,8 @@ public class WinConditionManager : MonoBehaviour
 
             Debug.Log(playersInZone);
 
-
             // If both players are in the win zone, change to the win screen
-            if (playersInZone == 2)
-            {
-                //New Code from Ziang Qin: only for beta Analytics
-                Debug.Log($"Player 1 Wait Time: {gameManager.WaitTimePlayer1}");
-                Debug.Log($"Player 2 Wait Time: {gameManager.WaitTimePlayer2}");
-
-                StartCoroutine(WaitForWinScreen());
-            }
+            if (playersInZone == 2) StartCoroutine(WaitForWinScreen());
         }
     }
 
