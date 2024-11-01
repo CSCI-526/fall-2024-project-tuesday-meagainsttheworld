@@ -1,43 +1,67 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
+
+public enum SizeChangeType
+{
+    Growing,
+    Shrinking
+}
 
 public class SizeChange : MonoBehaviour
 {
     [SerializeField] private float effectDuration = 5f; // Public duration for how long the effect should last
-    [SerializeField] private float sizeChangeValue = 1;
+    [SerializeField] private SizeChangeType type = SizeChangeType.Growing;
     [SerializeField] private bool regenerating = true;
+    private PlayerStats defaultStats;
+    private readonly float sizeChangeValue = 2;
+    private float mainSize = 1;
+    private float otherSize = 1;
+    private PlayerStats mainStats;
+    private PlayerStats otherStats;
+    private static Coroutine sizeChangeFunc;
 
     void Start()
     {
-        transform.localScale *= sizeChangeValue;
+        defaultStats = Resources.Load<PlayerStats>("Default Stats");
+        if (type == SizeChangeType.Growing)
+        {
+            mainSize = sizeChangeValue;
+            otherSize = 1 / sizeChangeValue;
+            mainStats = Resources.Load<PlayerStats>("Big Stats");
+            otherStats = Resources.Load<PlayerStats>("Small Stats");
+        }
+        else
+        {
+            mainSize = 1 / sizeChangeValue;
+            otherSize = sizeChangeValue;
+            mainStats = Resources.Load<PlayerStats>("Small Stats");
+            otherStats = Resources.Load<PlayerStats>("Big Stats");
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         // Grow powerup logic
         if (other.CompareTag("Player"))
-        {
-            Debug.Log("Size Change Activated");
-            
-            PlayerController mainStats = other.GetComponent<PlayerController>();
-            PlayerController otherStats = mainStats.OtherPlayer;
+        {   
+            PlayerController mainPlayer = other.GetComponent<PlayerController>();
+            PlayerController otherPlayer = mainPlayer.OtherPlayer;
 
-            // Start the coroutine to revert sizes after effectDuration and destroy powerup
-            StartCoroutine(RevertSizesAfterTime(mainStats, otherStats));
+            // End any previous powerup effect and begin current powerup
+            if (sizeChangeFunc != null) StopCoroutine(sizeChangeFunc);
+            sizeChangeFunc = StartCoroutine(RevertSizesAfterTime(mainPlayer, otherPlayer));
+            StartCoroutine(ConsumePowerup());
         }
     }
 
-    // To revert the size changes after the specified effect duration
-    private IEnumerator RevertSizesAfterTime(PlayerController mainStats, PlayerController otherStats)
+    private IEnumerator RevertSizesAfterTime(PlayerController mainPlayer, PlayerController otherPlayer)
     {
-        // Disable powerup collider and make it transparent if regernating or invisible if not
-        GetComponent<Collider2D>().enabled = false;
+        // Make effects from any potential previous powerups are undone
+        mainPlayer.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+        otherPlayer.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+        SetToDefaultSize(mainPlayer, otherPlayer);
 
-        if (regenerating) GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 0.5f);
-        else GetComponent<SpriteRenderer>().enabled = false;
-
-        // Change player sizes and stats in opposite ways
-        ChangeSizes(mainStats, otherStats, sizeChangeValue, 1/sizeChangeValue);
+        ChangeSizes(mainPlayer, otherPlayer);
 
         float timeSpent = effectDuration > 2 ? effectDuration - 1 : effectDuration * 0.8f;
 
@@ -45,8 +69,6 @@ public class SizeChange : MonoBehaviour
         float timeLeft = effectDuration - timeSpent;
 
         float interval = timeLeft / 10;
-        Color mainColor = mainStats.GetComponent<SpriteRenderer>().color;
-        Color otherColor = otherStats.GetComponent<SpriteRenderer>().color;
 
         bool colorToggle = true;
 
@@ -54,13 +76,13 @@ public class SizeChange : MonoBehaviour
         {
             if (colorToggle)
             {
-                mainStats.GetComponent<SpriteRenderer>().color = new Color(0.5f,0.5f,0.5f);
-                otherStats.GetComponent<SpriteRenderer>().color = new Color(0.5f,0.5f,0.5f);
+                mainPlayer.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
+                otherPlayer.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
             }
             else
             {
-                mainStats.GetComponent<SpriteRenderer>().color = mainColor;
-                otherStats.GetComponent<SpriteRenderer>().color = otherColor;
+                mainPlayer.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+                otherPlayer.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
             }
             colorToggle = !colorToggle;
             timeLeft -= interval;
@@ -68,9 +90,19 @@ public class SizeChange : MonoBehaviour
         }
 
         // Revert both players to their original sizes and stats
-        ChangeSizes(mainStats, otherStats, 1/sizeChangeValue, sizeChangeValue);
+        SetToDefaultSize(mainPlayer, otherPlayer);
+    }
 
-        Debug.Log("Size Reverted");
+    private IEnumerator ConsumePowerup()
+    {
+        // If regenerating: disable powerup collider + make it transparent and then reset
+        // If not regenerating: disable powerup collider + make it invisible and then destroy
+        GetComponent<Collider2D>().enabled = false;
+
+        if (regenerating) GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 0.5f);
+        else GetComponent<SpriteRenderer>().enabled = false;
+
+        yield return new WaitForSeconds(effectDuration + 0.05f);
 
         if (regenerating)
         {
@@ -80,33 +112,35 @@ public class SizeChange : MonoBehaviour
         else Destroy(gameObject);
     }
 
-    private void ChangeSizes(PlayerController mainStats, PlayerController otherStats, float mainSize, float otherSize)
+    private void ChangeSizes(PlayerController mainPlayer, PlayerController otherPlayer)
     {
-        mainStats.gameObject.transform.localScale *= mainSize;
-        mainStats.PlayerTrail.widthMultiplier *= mainSize;
-        mainStats.transform.GetChild(0).localScale *= mainSize;
-        mainStats.PlayerRb.mass *= mainSize * 100;
-        mainStats.baseGravity /= mainSize;
-        mainStats.maxFallSpeed /= mainSize;
-        mainStats.moveSpeed /= mainSize;
+        // Change player sizes and stats in opposite ways
 
-        otherStats.gameObject.transform.localScale *= otherSize;
-        otherStats.transform.GetChild(0).localScale *= otherSize;
-        otherStats.PlayerTrail.widthMultiplier *= otherSize;
-        otherStats.PlayerRb.mass *= otherSize * 100;
-        otherStats.baseGravity /= otherSize;
-        otherStats.maxFallSpeed /= otherSize;
-        otherStats.moveSpeed /= otherSize;
+        mainPlayer.gameObject.transform.localScale *= mainSize;
+        mainPlayer.PlayerTrail.widthMultiplier *= mainSize;
+        mainPlayer.transform.GetChild(0).localScale *= mainSize;
+        mainPlayer.PlayerRb.mass *= mainSize * 100;
+        mainPlayer.stats = mainStats;
 
-        if (sizeChangeValue > 1)
-        {
-            mainStats.jumpHeight *= mainSize;
-            mainStats.airAdjustMultiplier *= mainSize;
-        }
-        else
-        {
-            otherStats.jumpHeight *= otherSize;
-            otherStats.airAdjustMultiplier *= otherSize;
-        }
+        otherPlayer.gameObject.transform.localScale *= otherSize;
+        otherPlayer.PlayerTrail.widthMultiplier *= otherSize;
+        otherPlayer.transform.GetChild(0).localScale *= otherSize;
+        otherPlayer.PlayerRb.mass *= otherSize * 100;
+        otherPlayer.stats = otherStats;
+    }
+
+    private void SetToDefaultSize(PlayerController mainPlayer, PlayerController otherPlayer)
+    {
+        mainPlayer.gameObject.transform.localScale = Vector3.one;
+        mainPlayer.PlayerTrail.widthMultiplier = 1;
+        mainPlayer.transform.GetChild(0).localScale = Vector3.one;
+        mainPlayer.PlayerRb.mass = 1;
+        mainPlayer.stats = defaultStats;
+
+        otherPlayer.gameObject.transform.localScale = Vector3.one;
+        otherPlayer.PlayerTrail.widthMultiplier = 1;
+        otherPlayer.transform.GetChild(0).localScale = Vector3.one;
+        otherPlayer.PlayerRb.mass = 1;
+        otherPlayer.stats = defaultStats;
     }
 }

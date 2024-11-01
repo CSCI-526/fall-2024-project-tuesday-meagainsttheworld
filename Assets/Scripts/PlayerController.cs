@@ -4,23 +4,25 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    public PlayerStats stats;
     [SerializeField] private Vector2 moveInput;
-    [Range(1, 20)] public float moveSpeed = 10;
-    [Range(1, 10)] public float jumpHeight = 4;
-    [SerializeField, Range(0.001f, 0.01f)] private float wallJumpLerp = 0.0075f;
-    [SerializeField, Range(0, 1)] private float wallJumpRecoveryThreshold = 0.3f;
-    [SerializeField] private float wallJumpRecovery = 0;
-    [Range(1, 100)] public float maxFallSpeed = 25;
-    [Range(0, 1)] public float wallSlideSlow = 0.1f;
-    [Range(1, 10)] public float baseGravity = 1;
-    [Range(1, 10)] public float fallGravityMultiplier = 1;
-    [Range(0, 1)] public float momentumResist = 0.1f;
-    [Range(0, 1)] public float airAdjustMultiplier = 0.2f;
-    [SerializeField, Range(0, 5)] private float airHangThreshold = 0.3f;
 
     [SerializeField] private InputAction moveAction;
     [SerializeField] private InputAction jumpAction;
     [SerializeField] private InputAction gravityToggleAction;
+
+    [SerializeField, Range(0, 120)] private int jumpBuffer = 20;
+    [SerializeField, Range(0, 120)] private int gravityToggleBuffer = 20;
+
+    [SerializeField] private float wallJumpRecovery = 0;
+
+    [field: SerializeField] public bool IsGrounded { get; private set; }
+    [SerializeField] private bool jumping = false;
+    [SerializeField] private bool isOnLeftWall = false;
+    [SerializeField] private bool isOnRightWall = false;
+    [SerializeField] private bool isOnPlatform = false;
+    [SerializeField] private bool goingAgainstWall = false;
+    [SerializeField] private bool justWallJumped = false;
 
     public Rigidbody2D PlayerRb { get; private set; }
     public TrailRenderer PlayerTrail { get; private set; }
@@ -29,27 +31,24 @@ public class PlayerController : MonoBehaviour
     private Collider2D playerCollider;
     private int playerLayerMask;
     private Vector2 groundVector = Vector2.down;
-
     private RaycastHit2D groundCast;
-    [field: SerializeField] public bool IsGrounded { get; private set; }
-    [SerializeField] private bool isOnLeftWall = false;
-    [SerializeField] private bool isOnRightWall = false;
-    [SerializeField] private bool isOnPlatform = false;
-    [SerializeField] private bool goingAgainstWall = false;
-    [SerializeField] private bool justWallJumped = false;
+    private int jumpBufferLeft = 0;
+    private int gravityToggleBufferLeft = 0;
     private int wallJumpDir = 0;
+    private float currMaxFallSpeed = 0;
     private float relativeFallVel = 0;
     private Rigidbody2D platformRb;
 
     // Start is called before the first frame update
     void Start()
     {
+        if (!stats) stats = Resources.Load<PlayerStats>("Default Stats");
+
         PlayerRb = GetComponent<Rigidbody2D>();
         PlayerTrail = GetComponent<TrailRenderer>();
         playerCollider = GetComponent<Collider2D>();
         playerLayerMask = 1 << gameObject.layer;
         groundVector *= PlayerRb.gravityScale;
-        platformRb = transform.parent.GetComponent<Rigidbody2D>();
 
         GameObject[] playerList = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject playerObj in playerList)
@@ -91,23 +90,20 @@ public class PlayerController : MonoBehaviour
     {
         groundCast = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, transform.rotation.z, groundVector, 0.05f, playerLayerMask);
         IsGrounded = groundCast;
-        isOnLeftWall = Physics2D.Raycast(transform.position, Vector2.left, 0.05f + transform.localScale.x * Mathf.Sqrt(2) * 0.5f, playerLayerMask);
-        isOnRightWall = Physics2D.Raycast(transform.position, Vector2.right, 0.05f + transform.localScale.x * Mathf.Sqrt(2) * 0.5f, playerLayerMask);
+        isOnLeftWall = Physics2D.Raycast(transform.position, Vector2.left, 0.01f + transform.localScale.x * 0.5f, playerLayerMask);
+        isOnRightWall = Physics2D.Raycast(transform.position, Vector2.right, 0.01f + transform.localScale.x * 0.5f, playerLayerMask);
 
         if (IsGrounded) justWallJumped = false;
 
+        if (jumpBufferLeft > 0) ExecuteJump();
+
+        if (gravityToggleBufferLeft > 0) ExecuteGravityToggle();
+
         goingAgainstWall = (moveInput.x == -1 && isOnLeftWall) || (moveInput.x == 1 && isOnRightWall);
 
-        relativeFallVel = PlayerRb.velocity.y * groundVector.y;
-        if (relativeFallVel >= maxFallSpeed) PlayerRb.gravityScale = 0;
-        else
-        {
-            float relativeYVel = -relativeFallVel;
-            if (relativeYVel >= airHangThreshold) PlayerRb.gravityScale = baseGravity * -groundVector.y;
-            else if (Math.Abs(relativeYVel) < airHangThreshold) PlayerRb.gravityScale = 0.5f * baseGravity * -groundVector.y;
-            else PlayerRb.gravityScale = fallGravityMultiplier * baseGravity * -groundVector.y;
-        }
+        currMaxFallSpeed = goingAgainstWall ? stats.maxFallSpeed * 0.2f : stats.maxFallSpeed;
 
+        relativeFallVel = PlayerRb.velocity.y * groundVector.y;
     }
 
 
@@ -117,63 +113,61 @@ public class PlayerController : MonoBehaviour
         // Horizontal Movement
         if (moveInput.x != 0 || IsGrounded)
         {
-            float velCheck = moveSpeed * moveInput.x;
-
             // For relative velocity with respect to the platform the player is on
-            if ((IsGrounded && groundCast.collider.CompareTag("Platform")) || (isOnPlatform && goingAgainstWall))
-            {
-                velCheck += platformRb.velocity.x;
-            }
+            float platformVel = (IsGrounded && groundCast.collider.CompareTag("Platform")) || (isOnPlatform && goingAgainstWall) ? platformRb.velocity.x : 0;
+            
+            float velCheck = stats.moveSpeed * moveInput.x + platformVel;
 
             float velDelta = velCheck - PlayerRb.velocity.x;
 
             Vector2 forceReq = new(PlayerRb.mass * velDelta / Time.fixedDeltaTime, 0);
 
             // Conserving momentum from speed-up
-            if (Math.Abs(platformRb.velocity.x - PlayerRb.velocity.x) > Math.Abs(moveSpeed)) forceReq *= momentumResist;
+            if (Math.Abs(PlayerRb.velocity.x) > (stats.moveSpeed + Math.Abs(platformVel))) forceReq *= stats.momentumResist;
 
             // Wall Jump direction change delay
             if (justWallJumped && wallJumpDir != moveInput.x) forceReq *= wallJumpRecovery;
 
             // Mimic air drag
-            if (!IsGrounded) forceReq *= airAdjustMultiplier;
+            if (!IsGrounded) forceReq *= stats.airAdjustMultiplier;
 
-            PlayerRb.AddForce(forceReq);
-        }
-
-        // Sliding on wall
-        if (goingAgainstWall && (relativeFallVel > (maxFallSpeed * wallSlideSlow)))
-        {
-            float velDelta = (maxFallSpeed * wallSlideSlow * groundVector.y) - PlayerRb.velocity.y;
-            Vector2 forceReq = new(0, PlayerRb.mass * velDelta / Time.fixedDeltaTime);
             PlayerRb.AddForce(forceReq);
         }
 
         // Clamp fall speed
-        if (relativeFallVel > maxFallSpeed)
+        if (relativeFallVel >= currMaxFallSpeed)
         {
-            float velDelta = (maxFallSpeed - relativeFallVel) * groundVector.y;
+            PlayerRb.gravityScale = 0;
+            float velDelta = (currMaxFallSpeed - relativeFallVel) * groundVector.y;
             Vector2 forceReq = new(0, PlayerRb.mass * velDelta / Time.fixedDeltaTime);
             PlayerRb.AddForce(forceReq);
         }
-
-        // // Rotate in midair
-        // if (!IsGrounded && !goingAgainstWall)
-        // {
-        //     float rotateVal = Math.Abs(PlayerRb.velocity.x) < 0.1 * moveSpeed ? 0 : Math.Sign(PlayerRb.velocity.x);
-        //     PlayerRb.angularVelocity = rotateVal * groundVector.y * 180;
-        // }
+        else
+        {
+            float relativeYVel = -relativeFallVel;
+            if (relativeYVel >= stats.airHangThreshold) PlayerRb.gravityScale = stats.baseGravity * -groundVector.y;
+            else
+            {
+                if (Math.Abs(relativeYVel) < stats.airHangThreshold) PlayerRb.gravityScale = 0.5f * stats.baseGravity * -groundVector.y;
+                else 
+                {
+                    jumping = false;
+                    PlayerRb.gravityScale = stats.fallGravityMultiplier * stats.baseGravity * -groundVector.y;
+                }
+            }
+        }
 
         // Wall jump Lerp
         if (justWallJumped)
         {
-            wallJumpRecovery = Mathf.Lerp(wallJumpRecovery, 1, wallJumpLerp);
-            if (wallJumpRecovery > wallJumpRecoveryThreshold) justWallJumped = false;
+            wallJumpRecovery = Mathf.Lerp(wallJumpRecovery, 1, stats.wallJumpLerp);
+            if (wallJumpRecovery > stats.wallJumpRecoveryThreshold) justWallJumped = false;
         }
     }
 
     void OnCollisionEnter2D(Collision2D other)
     {
+        jumping = false;
         if (other.gameObject.CompareTag("Platform"))
         {
             platformRb = other.transform.GetComponent<Rigidbody2D>();
@@ -183,11 +177,7 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionExit2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Platform"))
-        {
-            platformRb = transform.parent.GetComponent<Rigidbody2D>();
-            isOnPlatform = false;
-        }
+        isOnPlatform = false;
     }
 
     private void OnMove(InputAction.CallbackContext context)
@@ -198,36 +188,54 @@ public class PlayerController : MonoBehaviour
     private void OnJump(InputAction.CallbackContext context)
     {
         if (HelpPopupController.isPaused) return;
+
         if (context.phase == InputActionPhase.Started)
         {
-            if (IsGrounded || isOnLeftWall || isOnRightWall)
-            {
-                float jumpMult = Mathf.Sqrt(jumpHeight * Mathf.Abs(Physics2D.gravity.y * baseGravity) * 2) * PlayerRb.mass / Time.fixedDeltaTime;
-                Vector2 jumpVec;
-                if (IsGrounded)
-                {
-                    jumpVec = jumpMult * -groundVector;
-                    PlayerRb.AddForce(jumpVec);
-                }
-                else
-                {
-                    wallJumpDir = 0;
-                    if (isOnLeftWall) wallJumpDir += 1;
-                    if (isOnRightWall) wallJumpDir -= 1;
-
-                    jumpVec = 1.2f * jumpMult * (Quaternion.AngleAxis(wallJumpDir * 30, groundVector.y * Vector3.forward) * -groundVector);
-                    PlayerRb.velocity = new(PlayerRb.velocity.x, 0);
-                    PlayerRb.AddForce(jumpVec);
-                    justWallJumped = true;
-                    wallJumpRecovery = 0;
-                }
-            }
+            jumping = true;
+            jumpBufferLeft = jumpBuffer;
         }
-        // Jump Cancel in progress
-        // if (context.phase == InputActionPhase.Canceled)
-        // {
 
+        // // Jump Cancel in progress
+        // if (context.phase == InputActionPhase.Canceled && jumping)
+        // {
+        //     if (Math.Abs(relativeFallVel) > stats.airHangThreshold)
+        //     {
+        //         PlayerRb.gravityScale = 0.5f * stats.baseGravity * -groundVector.y;
+
+        //         float velDelta = (Math.Abs(relativeFallVel) - stats.airHangThreshold) * groundVector.y;
+        //         Vector2 forceReq = new(0, PlayerRb.mass * velDelta / Time.fixedDeltaTime);
+        //         PlayerRb.AddForce(forceReq);
+        //     }
+        //     jumping = false;
         // }
+    }
+
+    private void ExecuteJump()
+    {
+        if (IsGrounded || isOnLeftWall || isOnRightWall)
+        {
+            float jumpMult = Mathf.Sqrt(stats.jumpHeight * Mathf.Abs(Physics2D.gravity.y * stats.baseGravity) * 2) * PlayerRb.mass / Time.fixedDeltaTime;
+            Vector2 jumpVec;
+            if (IsGrounded)
+            {
+                jumpVec = jumpMult * -groundVector;
+                PlayerRb.AddForce(jumpVec);
+            }
+            else
+            {
+                wallJumpDir = 0;
+                if (isOnLeftWall) wallJumpDir += 1;
+                if (isOnRightWall) wallJumpDir -= 1;
+
+                jumpVec = 1.2f * jumpMult * (Quaternion.AngleAxis(wallJumpDir * 30, groundVector.y * Vector3.forward) * -groundVector);
+                PlayerRb.velocity = new(PlayerRb.velocity.x, 0);
+                PlayerRb.AddForce(jumpVec);
+                justWallJumped = true;
+                wallJumpRecovery = 0;
+            }
+            jumpBufferLeft = 0;
+        }
+        else jumpBufferLeft--;
     }
 
     private void OnGravityToggle(InputAction.CallbackContext context)
@@ -235,16 +243,18 @@ public class PlayerController : MonoBehaviour
         if (HelpPopupController.isPaused) return;
         if (context.phase == InputActionPhase.Started)
         {
-            if (IsGrounded || OtherPlayer.IsGrounded)
-            {
-                PlayerRb.gravityScale *= -1;
-                groundVector *= -1;
-            }
+            gravityToggleBufferLeft = gravityToggleBuffer;
         }
     }
 
-    public Vector2 GetPosition()
+    private void ExecuteGravityToggle()
     {
-        return transform.position;
+        if (IsGrounded || OtherPlayer.IsGrounded)
+        {
+            PlayerRb.gravityScale *= -1;
+            groundVector *= -1;
+            gravityToggleBufferLeft = 0;
+        }
+        else gravityToggleBufferLeft--;
     }
 }
