@@ -1,12 +1,13 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
 public class ButtonHoverColorChanger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
 {
     public TextMeshProUGUI buttonText;
-    [SerializeField] private Color normalColor = Color.black;
-    [SerializeField] private Color hoverColor = Color.white;
+    [SerializeField] private Color normalColor;
+    [SerializeField] private Color hoverColor;
     private bool isSelected = false;
 
     void Start()
