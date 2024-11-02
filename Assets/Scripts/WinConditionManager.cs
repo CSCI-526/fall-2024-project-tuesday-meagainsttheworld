@@ -4,7 +4,12 @@ using UnityEngine.SceneManagement;
 
 public class WinConditionManager : MonoBehaviour
 {
-    private int playersInZone = 0; // Counter for players in the win zone
+    private static int playersInZone = 0; // Counter for players in the win zone
+
+    void Start()
+    {
+        playersInZone = 0;
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -12,6 +17,8 @@ public class WinConditionManager : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playersInZone++;
+
+            GetComponent<SpriteRenderer>().color += new Color(0,0,0,0.5f);
 
             Debug.Log("Player Enter");
 
@@ -27,6 +34,7 @@ public class WinConditionManager : MonoBehaviour
         // Check if a player has exited the win zone
         if (other.CompareTag("Player"))
         {
+            GetComponent<SpriteRenderer>().color -= new Color(0,0,0,0.5f);
 
             Debug.Log("Player Exit");
             playersInZone--;

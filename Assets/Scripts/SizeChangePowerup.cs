@@ -12,31 +12,17 @@ public class SizeChange : MonoBehaviour
     [SerializeField] private float effectDuration = 5f; // Public duration for how long the effect should last
     [SerializeField] private SizeChangeType type = SizeChangeType.Growing;
     [SerializeField] private bool regenerating = true;
-    private PlayerStats defaultStats;
     private readonly float sizeChangeValue = 2;
-    private float mainSize = 1;
-    private float otherSize = 1;
-    private PlayerStats mainStats;
-    private PlayerStats otherStats;
+    private static PlayerStats defaultStats;
+    private static PlayerStats bigStats;
+    private static PlayerStats smallStats;
     private static Coroutine sizeChangeFunc;
 
     void Start()
     {
-        defaultStats = Resources.Load<PlayerStats>("Default Stats");
-        if (type == SizeChangeType.Growing)
-        {
-            mainSize = sizeChangeValue;
-            otherSize = 1 / sizeChangeValue;
-            mainStats = Resources.Load<PlayerStats>("Big Stats");
-            otherStats = Resources.Load<PlayerStats>("Small Stats");
-        }
-        else
-        {
-            mainSize = 1 / sizeChangeValue;
-            otherSize = sizeChangeValue;
-            mainStats = Resources.Load<PlayerStats>("Small Stats");
-            otherStats = Resources.Load<PlayerStats>("Big Stats");
-        }
+        if (!defaultStats) defaultStats = GameObject.FindWithTag("Player").GetComponent<PlayerController>().stats;
+        if (!bigStats) bigStats = Resources.Load<PlayerStats>("Big Stats");
+        if (!smallStats) smallStats = Resources.Load<PlayerStats>("Small Stats");
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -114,18 +100,40 @@ public class SizeChange : MonoBehaviour
 
     private void ChangeSizes(PlayerController mainPlayer, PlayerController otherPlayer)
     {
-        // Change player sizes and stats in opposite ways
+        float sizeChange;
+        float massChange;
 
-        mainPlayer.gameObject.transform.localScale *= mainSize;
-        mainPlayer.PlayerTrail.widthMultiplier *= mainSize;
-        mainPlayer.transform.GetChild(0).localScale *= mainSize;
-        mainPlayer.PlayerRb.mass *= mainSize * 100;
+        PlayerStats mainStats;
+        PlayerStats otherStats;
+
+        // Change player sizes and stats in opposite ways
+        if (type == SizeChangeType.Growing)
+        {
+            sizeChange = sizeChangeValue;
+            massChange = 100;
+
+            mainStats = bigStats;
+            otherStats = smallStats;
+        }
+        else
+        {
+            sizeChange = 1 / sizeChangeValue;
+            massChange = 0.01f;
+
+            mainStats = smallStats;
+            otherStats = bigStats;
+        }
+
+        mainPlayer.gameObject.transform.localScale *= sizeChange;
+        mainPlayer.PlayerTrail.widthMultiplier *= sizeChange;
+        mainPlayer.transform.GetChild(0).localScale *= sizeChange;
+        mainPlayer.PlayerRb.mass *= massChange;
         mainPlayer.stats = mainStats;
 
-        otherPlayer.gameObject.transform.localScale *= otherSize;
-        otherPlayer.PlayerTrail.widthMultiplier *= otherSize;
-        otherPlayer.transform.GetChild(0).localScale *= otherSize;
-        otherPlayer.PlayerRb.mass *= otherSize * 100;
+        otherPlayer.gameObject.transform.localScale /= sizeChange;
+        otherPlayer.PlayerTrail.widthMultiplier /= sizeChange;
+        otherPlayer.transform.GetChild(0).localScale /= sizeChange;
+        otherPlayer.PlayerRb.mass /= massChange;
         otherPlayer.stats = otherStats;
     }
 

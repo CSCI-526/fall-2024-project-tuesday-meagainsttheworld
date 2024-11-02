@@ -17,11 +17,9 @@ MonoBehaviour:
   wallSlideSlow: 0.1
   airAdjustMultiplier: 0.2
   momentumResist: 0.1
-  jumpHeight: 3
-  jumpBuffer: 20
+  jumpHeight: 3.1
   airHangThreshold: 0.3
   wallJumpLerp: 0.009
   wallJumpRecoveryThreshold: 0.3
   baseGravity: 2
   fallGravityMultiplier: 3
-  gravityToggleBuffer: 20
