@@ -41,9 +41,9 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Player 2 Position: {currentPositionPlayer2}");
 
         // Check Player 1's position
-        if (currentPositionPlayer1 == lastPositionPlayer1)waitTimePlayer1 += 0.5f;
+        if (currentPositionPlayer1 == lastPositionPlayer1) waitTimePlayer1 += 0.5f;
         // Check Player 2's position
-        if (currentPositionPlayer2 == lastPositionPlayer2)waitTimePlayer2 += 0.5f;
+        if (currentPositionPlayer2 == lastPositionPlayer2) waitTimePlayer2 += 0.5f;
         Debug.Log($"WaitTime: player1: {waitTimePlayer1} player 2: {waitTimePlayer2}");
         // Update last positions
         lastPositionPlayer1 = currentPositionPlayer1;
