@@ -33,8 +33,8 @@ public class GameManager : MonoBehaviour
 
     private void LogPositions()
     {
-        Vector2 currentPositionPlayer1 = player1.GetPosition();
-        Vector2 currentPositionPlayer2 = player2.GetPosition();
+        Vector2 currentPositionPlayer1 = player1.transform.position;
+        Vector2 currentPositionPlayer2 = player2.transform.position;
 
         // Log positions
         Debug.Log($"Player 1 Position: {currentPositionPlayer1}");
