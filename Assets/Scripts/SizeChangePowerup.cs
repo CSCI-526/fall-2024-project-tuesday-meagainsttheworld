@@ -12,17 +12,50 @@ public class SizeChange : MonoBehaviour
     [SerializeField] private float effectDuration = 5f; // Public duration for how long the effect should last
     [SerializeField] private SizeChangeType type = SizeChangeType.Growing;
     [SerializeField] private bool regenerating = true;
+    [SerializeField] private bool alternating = false;
+    [SerializeField] private float alternatingInterval = 2.5f;
+    private float alternatingTimer = 0;
     private readonly float sizeChangeValue = 2;
     private static PlayerStats defaultStats;
     private static PlayerStats bigStats;
     private static PlayerStats smallStats;
     private static Coroutine sizeChangeFunc;
+    private static readonly Color regenColor = new Color(0, 0, 0, 0.5f);
 
     void Start()
     {
         if (!defaultStats) defaultStats = GameObject.FindWithTag("Player").GetComponent<PlayerController>().stats;
         if (!bigStats) bigStats = Resources.Load<PlayerStats>("Big Stats");
         if (!smallStats) smallStats = Resources.Load<PlayerStats>("Small Stats");
+
+        if (gameObject.layer == 6)
+        {
+            GetComponent<SpriteRenderer>().color = Color.black;
+            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.white;
+            transform.GetChild(1).GetComponent<SpriteRenderer>().color = Color.white;
+        }
+        else if (gameObject.layer == 7)
+        {
+            GetComponent<SpriteRenderer>().color = Color.white;
+            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.black;
+            transform.GetChild(1).GetComponent<SpriteRenderer>().color = Color.black;
+        }
+
+        ChangePowerupSprite();
+    }
+
+    void Update()
+    {
+        if (alternating)
+        {
+            if (alternatingTimer > alternatingInterval)
+            {
+                type = type == SizeChangeType.Growing ? SizeChangeType.Shrinking : SizeChangeType.Growing;
+                ChangePowerupSprite();
+                alternatingTimer = 0;
+            }
+            else alternatingTimer += Time.deltaTime;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -85,15 +118,27 @@ public class SizeChange : MonoBehaviour
         // If not regenerating: disable powerup collider + make it invisible and then destroy
         GetComponent<Collider2D>().enabled = false;
 
-        if (regenerating) GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 0.5f);
-        else GetComponent<SpriteRenderer>().enabled = false;
+        if (regenerating)
+        {
+            GetComponent<SpriteRenderer>().color -= regenColor;
+            transform.GetChild(0).GetComponent<SpriteRenderer>().color -= regenColor;
+            transform.GetChild(1).GetComponent<SpriteRenderer>().color -= regenColor;
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().enabled = false;
+            transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
+            transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+        }
 
         yield return new WaitForSeconds(effectDuration + 0.05f);
 
         if (regenerating)
         {
             GetComponent<Collider2D>().enabled = true;
-            GetComponent<SpriteRenderer>().color += new Color(0, 0, 0, 0.5f);
+            GetComponent<SpriteRenderer>().color += regenColor;
+            transform.GetChild(0).GetComponent<SpriteRenderer>().color += regenColor;
+            transform.GetChild(1).GetComponent<SpriteRenderer>().color += regenColor;
         }
         else Destroy(gameObject);
     }
@@ -125,13 +170,13 @@ public class SizeChange : MonoBehaviour
         }
 
         mainPlayer.gameObject.transform.localScale *= sizeChange;
-        mainPlayer.PlayerTrail.widthMultiplier *= sizeChange;
+        // mainPlayer.PlayerTrail.widthMultiplier *= sizeChange;
         mainPlayer.transform.GetChild(0).localScale *= sizeChange;
         mainPlayer.PlayerRb.mass *= massChange;
         mainPlayer.stats = mainStats;
 
         otherPlayer.gameObject.transform.localScale /= sizeChange;
-        otherPlayer.PlayerTrail.widthMultiplier /= sizeChange;
+        // otherPlayer.PlayerTrail.widthMultiplier /= sizeChange;
         otherPlayer.transform.GetChild(0).localScale /= sizeChange;
         otherPlayer.PlayerRb.mass /= massChange;
         otherPlayer.stats = otherStats;
@@ -140,15 +185,36 @@ public class SizeChange : MonoBehaviour
     private void SetToDefaultSize(PlayerController mainPlayer, PlayerController otherPlayer)
     {
         mainPlayer.gameObject.transform.localScale = Vector3.one;
-        mainPlayer.PlayerTrail.widthMultiplier = 1;
+        // mainPlayer.PlayerTrail.widthMultiplier = 1;
         mainPlayer.transform.GetChild(0).localScale = Vector3.one;
         mainPlayer.PlayerRb.mass = 1;
         mainPlayer.stats = defaultStats;
 
         otherPlayer.gameObject.transform.localScale = Vector3.one;
-        otherPlayer.PlayerTrail.widthMultiplier = 1;
+        // otherPlayer.PlayerTrail.widthMultiplier = 1;
         otherPlayer.transform.GetChild(0).localScale = Vector3.one;
         otherPlayer.PlayerRb.mass = 1;
         otherPlayer.stats = defaultStats;
+    }
+
+    void OnValidate()
+    {
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall += () => { ChangePowerupSprite(); };
+        #endif
+    }
+
+    private void ChangePowerupSprite()
+    {
+        if (type == SizeChangeType.Growing)
+        {
+            transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
+            transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+        }
+        else
+        {
+            transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
+            transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
+        }
     }
 }
