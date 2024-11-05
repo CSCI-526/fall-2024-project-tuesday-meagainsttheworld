@@ -6,6 +6,8 @@ public class DataCollection : MonoBehaviour
 {
     public static string sessionID = "";
 
+    public static int buildNo = 2;
+
     public static async void Post(string URL, WWWForm form)
     {
         // Prevent data from being sent while testing in Unity editor

@@ -17,19 +17,21 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float wallJumpRecovery = 0;
 
     [field: SerializeField] public bool IsGrounded { get; private set; }
-    [SerializeField] private bool jumping = false;
+    // [SerializeField] private bool jumping = false;
     [SerializeField] private bool isOnLeftWall = false;
     [SerializeField] private bool isOnRightWall = false;
     [SerializeField] private bool isOnPlatform = false;
     [SerializeField] private bool goingAgainstWall = false;
     [SerializeField] private bool justWallJumped = false;
+    private bool isOnWell;
 
     public Rigidbody2D PlayerRb { get; private set; }
-    public TrailRenderer PlayerTrail { get; private set; }
+    // public TrailRenderer PlayerTrail { get; private set; }
     public PlayerController OtherPlayer { get; private set; }
 
     private Collider2D playerCollider;
     private int playerLayerMask;
+    private int baseLayerNum;
     private Vector2 groundVector = Vector2.down;
     private RaycastHit2D groundCast;
     private int jumpBufferLeft = 0;
@@ -45,9 +47,10 @@ public class PlayerController : MonoBehaviour
         if (!stats) stats = Resources.Load<PlayerStats>("Default Stats");
 
         PlayerRb = GetComponent<Rigidbody2D>();
-        PlayerTrail = GetComponent<TrailRenderer>();
+        // PlayerTrail = GetComponent<TrailRenderer>();
         playerCollider = GetComponent<Collider2D>();
-        playerLayerMask = 1 << gameObject.layer;
+        baseLayerNum = gameObject.layer;
+        playerLayerMask = (1 << baseLayerNum) | (1 << 8); // 8 is Gray's layer
         groundVector *= PlayerRb.gravityScale;
 
         GameObject[] playerList = GameObject.FindGameObjectsWithTag("Player");
@@ -88,10 +91,12 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        groundCast = Physics2D.BoxCast(transform.position, playerCollider.bounds.size, transform.rotation.z, groundVector, 0.05f, playerLayerMask);
+        playerLayerMask = (1 << gameObject.layer) | (1 << 8);
+        groundCast = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0, groundVector, 0.05f, playerLayerMask);
+        isOnLeftWall = Physics2D.Raycast(playerCollider.bounds.center, Vector2.left, 0.01f + transform.localScale.x * 0.5f, playerLayerMask);
+        isOnRightWall = Physics2D.Raycast(playerCollider.bounds.center, Vector2.right, 0.01f + transform.localScale.x * 0.5f, playerLayerMask);
+        
         IsGrounded = groundCast;
-        isOnLeftWall = Physics2D.Raycast(transform.position, Vector2.left, 0.01f + transform.localScale.x * 0.5f, playerLayerMask);
-        isOnRightWall = Physics2D.Raycast(transform.position, Vector2.right, 0.01f + transform.localScale.x * 0.5f, playerLayerMask);
 
         if (IsGrounded) justWallJumped = false;
 
@@ -114,13 +119,17 @@ public class PlayerController : MonoBehaviour
         if (moveInput.x != 0 || IsGrounded)
         {
             // For relative velocity with respect to the platform the player is on
-            float platformVel = (IsGrounded && groundCast.collider.CompareTag("Platform")) || (isOnPlatform && goingAgainstWall) ? platformRb.velocity.x : 0;
+            bool movingGround = false;
+            if (groundCast.collider && platformRb) movingGround = groundCast.collider.CompareTag("Platform") || groundCast.collider.CompareTag("Well");
+            float platformVel = (IsGrounded && movingGround) || (isOnPlatform && goingAgainstWall) ? platformRb.velocity.x : 0;
             
             float velCheck = stats.moveSpeed * moveInput.x + platformVel;
 
             float velDelta = velCheck - PlayerRb.velocity.x;
 
             Vector2 forceReq = new(PlayerRb.mass * velDelta / Time.fixedDeltaTime, 0);
+
+            if (isOnWell) platformVel = 0;
 
             // Conserving momentum from speed-up
             if (Math.Abs(PlayerRb.velocity.x) > (stats.moveSpeed + Math.Abs(platformVel))) forceReq *= stats.momentumResist;
@@ -151,7 +160,7 @@ public class PlayerController : MonoBehaviour
                 if (Math.Abs(relativeYVel) < stats.airHangThreshold) PlayerRb.gravityScale = 0.5f * stats.baseGravity * -groundVector.y;
                 else 
                 {
-                    jumping = false;
+                    // jumping = false;
                     PlayerRb.gravityScale = stats.fallGravityMultiplier * stats.baseGravity * -groundVector.y;
                 }
             }
@@ -165,19 +174,32 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Well")) 
+        {
+            PlayerRb.gravityScale = 0;
+            gameObject.layer = 9;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Well")) gameObject.layer = baseLayerNum;
+    }
+
     void OnCollisionEnter2D(Collision2D other)
     {
-        jumping = false;
-        if (other.gameObject.CompareTag("Platform"))
-        {
-            platformRb = other.transform.GetComponent<Rigidbody2D>();
-            isOnPlatform = true;
-        }
+        // jumping = false;
+        isOnPlatform = other.gameObject.CompareTag("Platform");
+        isOnWell = other.gameObject.CompareTag("Well");
+        if (isOnPlatform || isOnWell) platformRb = other.transform.GetComponent<Rigidbody2D>();
     }
 
     void OnCollisionExit2D(Collision2D other)
     {
         isOnPlatform = false;
+        isOnWell = false;
     }
 
     private void OnMove(InputAction.CallbackContext context)
@@ -191,7 +213,7 @@ public class PlayerController : MonoBehaviour
 
         if (context.phase == InputActionPhase.Started)
         {
-            jumping = true;
+            // jumping = true;
             jumpBufferLeft = jumpBuffer;
         }
 

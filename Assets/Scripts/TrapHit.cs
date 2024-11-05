@@ -25,7 +25,7 @@ public class TrapHit : MonoBehaviour
     {
         GetComponent<Collider2D>().enabled = false;
         GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-        GetComponent<TrailRenderer>().enabled = false;
+        // GetComponent<TrailRenderer>().enabled = false;
         GetComponent<SpriteRenderer>().enabled = false;
         transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
         transform.GetChild(0).GetComponent<ParticleSystem>().Play();
@@ -54,7 +54,7 @@ public class TrapHit : MonoBehaviour
         // Player Y coordinate at time of death
         form.AddField("entry.1068866632", transform.position.y.ToString());
         // Current build name
-        form.AddField("entry.1014429915", 1);
+        form.AddField("entry.1014429915", DataCollection.buildNo);
 
         DataCollection.Post(deathCountURL, form);
     }
