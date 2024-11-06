@@ -17,7 +17,7 @@ def fetch_data_from_google_sheets(sheet_url):
     return [(record['currLevel'], record['playerX'], record['playerY']) for record in records]
 
 # Transform coordinates from [-32, 32] to the target range
-def transform_coordinates(x, y, x_range=(-32, 32), y_range=(-32, 32), x_target=(0, 500), y_target=(0, 300)):
+def transform_coordinates(x, y, x_range=(-32, 32), y_range=(-32, 32), x_target=(0, 2560), y_target=(0, 1440)):
     x_transformed = x_target[0] + ((x - x_range[0]) * (x_target[1] - x_target[0]) / (x_range[1] - x_range[0]))
     y_transformed = y_target[0] + ((y - y_range[0]) * (y_target[1] - y_target[0]) / (y_range[1] - y_range[0]))
     return int(x_transformed), int(y_transformed)
@@ -27,7 +27,7 @@ def apply_heatmap_to_images(images, data_points, heatmap_intensity=1.0, blur_rad
     heatmaps = {i: np.zeros((image.shape[0], image.shape[1])) for i, image in enumerate(images)}
 
     for image_number, x, y in data_points:
-        if 0 <= image_number < len(images):
+        if 0 <= int(image_number[5]) < len(images):
             # Transform coordinates
             x_transformed, y_transformed = transform_coordinates(x, y)
             # Ensure coordinates are within image bounds
@@ -54,10 +54,8 @@ if __name__ == "__main__":
     image_files = ["images/level0.png", "images/level1.png", "images/level2.png", "images/level3.png"]  # Replace with your image paths
     images = [cv2.imread(file) for file in image_files]
 
-    # Fetch data points from Google Sheets
     data_points = fetch_data_from_google_sheets(sheet_url)
 
-    # Apply heatmap and save/display results
     images_with_heatmap = apply_heatmap_to_images(images, data_points)
 
     for i, img in enumerate(images_with_heatmap):
