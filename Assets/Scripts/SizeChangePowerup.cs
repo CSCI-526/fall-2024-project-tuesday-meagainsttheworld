@@ -200,7 +200,28 @@ public class SizeChange : MonoBehaviour
     void OnValidate()
     {
         #if UNITY_EDITOR
-            UnityEditor.EditorApplication.delayCall += () => { ChangePowerupSprite(); };
+            UnityEditor.EditorApplication.delayCall += () =>
+            {
+                if (gameObject.layer == 0)
+                {
+                    GetComponent<SpriteRenderer>().color = Color.gray;
+                    transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.black;
+                    transform.GetChild(1).GetComponent<SpriteRenderer>().color = Color.black;
+                }
+                if (gameObject.layer == 6)
+                {
+                    GetComponent<SpriteRenderer>().color = Color.black;
+                    transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.white;
+                    transform.GetChild(1).GetComponent<SpriteRenderer>().color = Color.white;
+                }
+                else if (gameObject.layer == 7)
+                {
+                    GetComponent<SpriteRenderer>().color = Color.white;
+                    transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.black;
+                    transform.GetChild(1).GetComponent<SpriteRenderer>().color = Color.black;
+                }
+                ChangePowerupSprite();
+            };
         #endif
     }
 
