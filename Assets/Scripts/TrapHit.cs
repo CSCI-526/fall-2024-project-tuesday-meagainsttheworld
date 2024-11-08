@@ -4,18 +4,12 @@ using UnityEngine.SceneManagement;
 
 public class TrapHit : MonoBehaviour
 {
-    private readonly string deathCountURL = "https://docs.google.com/forms/d/e/1FAIpQLSd0XcbT8jZLLgnJI22RhSL7xweuyTPJfPwONQbg0C2zk805zA/formResponse";
+    private readonly static string deathCountURL = "https://docs.google.com/forms/d/e/1FAIpQLSd0XcbT8jZLLgnJI22RhSL7xweuyTPJfPwONQbg0C2zk805zA/formResponse";
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Trap"))
         {
-            //New Code by Ziang Qin: only for alpha Analytics
-            // WinConditionManager.entryCount++;
-            // string currentSceneName = SceneManager.GetActiveScene().name;
-            // Vector2 playerPosition = transform.position;
-            // Debug.Log("Death Scene: " + currentSceneName + ", Death Player Position: " + playerPosition + ", Deaths Count: " + WinConditionManager.entryCount);
-            
             SendDeath();
             StartCoroutine(PlayDeath());
         }
@@ -44,7 +38,7 @@ public class TrapHit : MonoBehaviour
         WWWForm form = new();
         
         // Session ID
-        form.AddField("entry.1554864013", DataCollection.sessionID);
+        form.AddField("entry.1554864013", DataCollection.SessionID);
         // Player ID
         form.AddField("entry.298539410", name);
         // Scene Name

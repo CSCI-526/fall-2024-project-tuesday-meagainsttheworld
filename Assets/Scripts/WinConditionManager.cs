@@ -20,7 +20,7 @@ public class WinConditionManager : MonoBehaviour
 
             GetComponent<SpriteRenderer>().color += new Color(0,0,0,0.5f);
 
-            Debug.Log("Player Enter");
+            Debug.Log("Player entered " + name);
 
             Debug.Log(playersInZone);
 
@@ -34,9 +34,10 @@ public class WinConditionManager : MonoBehaviour
         // Check if a player has exited the win zone
         if (other.CompareTag("Player"))
         {
+            if (playersInZone == 2) return;
             GetComponent<SpriteRenderer>().color -= new Color(0,0,0,0.5f);
 
-            Debug.Log("Player Exit");
+            Debug.Log("Player exited " + name);
             playersInZone--;
         }
     }

@@ -20,7 +20,7 @@ public class SizeChange : MonoBehaviour
     private static PlayerStats bigStats;
     private static PlayerStats smallStats;
     private static Coroutine sizeChangeFunc;
-    private static readonly Color regenColor = new Color(0, 0, 0, 0.5f);
+    private static readonly Color regenColor = new(0, 0, 0, 0.5f);
 
     void Start()
     {

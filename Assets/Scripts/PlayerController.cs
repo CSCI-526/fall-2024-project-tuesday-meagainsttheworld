@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -196,6 +197,23 @@ public class PlayerController : MonoBehaviour
         if (isOnPlatform || isOnWell) platformRb = other.transform.GetComponent<Rigidbody2D>();
     }
 
+    void OnCollisionStay2D(Collision2D other)
+    {
+        Vector3 boxSize = playerCollider.bounds.size * 0.35f;
+        float travelDist = boxSize.x * 0.5f;
+        bool upCheck = Physics2D.BoxCast(playerCollider.bounds.center, boxSize, 0, Vector2.up, travelDist, playerLayerMask);
+        bool downCheck = Physics2D.BoxCast(playerCollider.bounds.center, boxSize, 0, Vector2.down, travelDist, playerLayerMask);
+        bool leftCheck = Physics2D.BoxCast(playerCollider.bounds.center, boxSize, 0, Vector2.left, travelDist, playerLayerMask);
+        bool rightCheck = Physics2D.BoxCast(playerCollider.bounds.center, boxSize, 0, Vector2.right, travelDist, playerLayerMask);
+
+        if ((upCheck && downCheck) || (leftCheck && rightCheck))
+        {
+            StartCoroutine(GetComponent<TrapHit>().PlayDeath());
+            GetComponent<TrapHit>().SendDeath();
+            Debug.Log("Crushed");
+        }
+    }
+
     void OnCollisionExit2D(Collision2D other)
     {
         isOnPlatform = false;
@@ -269,6 +287,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // private readonly static string gravityCounterURL = "";
+
     private void ExecuteGravityToggle()
     {
         if (IsGrounded || OtherPlayer.IsGrounded)
@@ -276,6 +296,23 @@ public class PlayerController : MonoBehaviour
             PlayerRb.gravityScale *= -1;
             groundVector *= -1;
             gravityToggleBufferLeft = 0;
+
+            // WWWForm form = new();
+
+            // // Session ID
+            // form.AddField("", DataCollection.SessionID);
+            // // Current build name
+            // form.AddField("", DataCollection.buildNo);
+            // // Level
+            // form.AddField("", SceneManager.GetActiveScene().name);
+            // // Player ID
+            // form.AddField("", name);
+            // // Player X coordinate at gravity toggle location
+            // form.AddField("", transform.position.x.ToString());
+            // // Player Y coordinate at gravity toggle location
+            // form.AddField("", transform.position.y.ToString());
+
+            // DataCollection.Post(gravityCounterURL, form);
         }
         else gravityToggleBufferLeft--;
     }

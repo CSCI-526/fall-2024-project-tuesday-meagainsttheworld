@@ -1,12 +1,19 @@
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class DataCollection : MonoBehaviour
+public class DataCollection
 {
-    public static string sessionID = "";
+    public readonly static int buildNo = 2;
+    public static string SessionID { get; private set; }
 
-    public static int buildNo = 2;
+    [RuntimeInitializeOnLoadMethod]
+    static void OnRuntimeInitialized()
+    {
+        SessionID = DateTime.Now.Ticks.ToString();
+        Debug.Log("Session ID: " + SessionID);
+    }
 
     public static async void Post(string URL, WWWForm form)
     {

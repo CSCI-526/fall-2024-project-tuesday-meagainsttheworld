@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,11 +12,9 @@ public class SceneSwitcher : MonoBehaviour
 
     void Start()
     {
-        if (string.IsNullOrEmpty(DataCollection.sessionID)) DataCollection.sessionID = DateTime.Now.Ticks.ToString();
-
         if (SceneManager.GetActiveScene().name == "YouWin")
         {
-            int lastLevelNum = int.Parse(prevLevel[5..]);
+            int lastLevelNum = int.Parse(prevLevel[(prevLevel.LastIndexOf('l') + 1)..]);
             if (lastLevelNum != finalLevelNum) enterText.GetComponent<TextMeshProUGUI>().text = "Press 'ENTER' to go to next level";
             else enterText.GetComponent<TextMeshProUGUI>().text = "Press 'ENTER' to restart";
         }
@@ -27,35 +24,27 @@ public class SceneSwitcher : MonoBehaviour
     void Update()
     {
         // Check if the Enter key is pressed
-        if (Input.GetKeyDown(KeyCode.Return)) // KeyCode.Return corresponds to the Enter key
+        if (Input.GetKeyDown(KeyCode.Return))
         {
             string sceneName = SceneManager.GetActiveScene().name;
             if (sceneName == "GameOver") SceneManager.LoadScene(prevLevel);
             else if (sceneName == "YouWin")
             {
-                int lastLevelNum = int.Parse(prevLevel[5..]);
-                if (lastLevelNum < finalLevelNum) SceneManager.LoadScene(prevLevel[..5] + (lastLevelNum + 1).ToString());
+                int lastLevelNum = int.Parse(prevLevel[(prevLevel.LastIndexOf('l') + 1)..]);
+                if (lastLevelNum < finalLevelNum) LevelSelect(lastLevelNum + 1);
                 else SceneManager.LoadScene("LevelsMenu");
             }
             else SceneManager.LoadScene("LevelsMenu");
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab)) // KeyCode.Return corresponds to the Enter key
-        {
-            // Load the specified scene
-            SceneManager.LoadScene("ControlsMenu");
-        }
+        if (Input.GetKeyDown(KeyCode.Tab)) SceneManager.LoadScene("ControlsMenu");
 
-        if (Input.GetKeyDown(KeyCode.M)) // KeyCode.Return corresponds to the Enter key
-        {
-            // Load the specified scene
-            SceneManager.LoadScene("MainMenu");
-        }
+        if (Input.GetKeyDown(KeyCode.M)) SceneManager.LoadScene("MainMenu");
     }
 
-    public void LevelSelect(string level)
+    public void LevelSelect(int level)
     {
-        Debug.Log(level);
+        Debug.Log("Loading level " + level);
         SceneManager.LoadScene("Level" + level);
     }
 }

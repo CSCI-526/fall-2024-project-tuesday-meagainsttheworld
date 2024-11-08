@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class PositionTracker : MonoBehaviour
 {
-    private readonly string waitTimeURL = "https://docs.google.com/forms/d/e/1FAIpQLSfxrUCyNT7e4dg9pYvrvIYtnsN4sZ2AjTkCSb_bqYKjv4Vlxg/formResponse";
+    private readonly static string waitTimeURL = "https://docs.google.com/forms/d/e/1FAIpQLSfxrUCyNT7e4dg9pYvrvIYtnsN4sZ2AjTkCSb_bqYKjv4Vlxg/formResponse";
 
     private struct PlayerTracker
     {
@@ -74,7 +74,7 @@ public class PositionTracker : MonoBehaviour
         WWWForm form = new();
 
         // Session ID
-        form.AddField("entry.375346932", DataCollection.sessionID);
+        form.AddField("entry.375346932", DataCollection.SessionID);
         // Current build name
         form.AddField("entry.684969437", DataCollection.buildNo);
         // Level
