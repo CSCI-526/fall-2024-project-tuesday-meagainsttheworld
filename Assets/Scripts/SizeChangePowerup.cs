@@ -202,6 +202,7 @@ public class SizeChange : MonoBehaviour
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.delayCall += () =>
             {
+                if (this == null) return;
                 if (gameObject.layer == 0)
                 {
                     GetComponent<SpriteRenderer>().color = Color.gray;
