@@ -14,9 +14,9 @@ public class SceneSwitcher : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name == "YouWin")
         {
-            int lastLevelNum = int.Parse(prevLevel[(prevLevel.LastIndexOf('l') + 1)..]);
-            if (lastLevelNum != finalLevelNum) enterText.GetComponent<TextMeshProUGUI>().text = "Press 'ENTER' to go to next level";
-            else enterText.GetComponent<TextMeshProUGUI>().text = "Press 'ENTER' to restart";
+            bool validLvlName = int.TryParse(prevLevel[(prevLevel.LastIndexOf('l') + 1)..], out int lastLevelNum);
+            if (validLvlName && lastLevelNum != finalLevelNum) enterText.GetComponent<TextMeshProUGUI>().text = "Press 'ENTER' to go to next level";
+            else enterText.GetComponent<TextMeshProUGUI>().text = "Press 'ENTER' to return to level select";
         }
     }
 
@@ -27,11 +27,10 @@ public class SceneSwitcher : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Return))
         {
             string sceneName = SceneManager.GetActiveScene().name;
-            if (sceneName == "GameOver") SceneManager.LoadScene(prevLevel);
-            else if (sceneName == "YouWin")
+            if (sceneName == "YouWin")
             {
-                int lastLevelNum = int.Parse(prevLevel[(prevLevel.LastIndexOf('l') + 1)..]);
-                if (lastLevelNum < finalLevelNum) LevelSelect(lastLevelNum + 1);
+                bool validLvlName = int.TryParse(prevLevel[(prevLevel.LastIndexOf('l') + 1)..], out int lastLevelNum);
+                if (validLvlName && lastLevelNum < finalLevelNum) LevelSelect(lastLevelNum + 1);
                 else SceneManager.LoadScene("LevelsMenu");
             }
             else SceneManager.LoadScene("LevelsMenu");
