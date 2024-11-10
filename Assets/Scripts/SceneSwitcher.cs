@@ -20,10 +20,15 @@ public class SceneSwitcher : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // Check if the Enter key is pressed
+        if (Input.inputString != "" && SceneManager.GetActiveScene().name == "LevelsMenu")
+        {
+            bool isNum = int.TryParse(Input.inputString, out int lvl_num);
+
+            if (isNum && lvl_num <= finalLevelNum) LevelSelect(lvl_num);
+        }
+
         if (Input.GetKeyDown(KeyCode.Return))
         {
             string sceneName = SceneManager.GetActiveScene().name;
