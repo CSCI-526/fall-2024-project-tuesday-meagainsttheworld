@@ -6,7 +6,7 @@ public class SceneSwitcher : MonoBehaviour
 {
     public static string prevLevel = "Level0";
 
-    private static readonly int finalLevelNum = 4;
+    private static readonly int finalLevelNum = 2;
 
     [SerializeField] private GameObject enterText;
 
@@ -15,8 +15,11 @@ public class SceneSwitcher : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "YouWin")
         {
             bool validLvlName = int.TryParse(prevLevel[(prevLevel.LastIndexOf('l') + 1)..], out int lastLevelNum);
-            if (validLvlName && lastLevelNum != finalLevelNum) enterText.GetComponent<TextMeshProUGUI>().text = "Press 'ENTER' to go to next level";
-            else enterText.GetComponent<TextMeshProUGUI>().text = "Press 'ENTER' to return to level select";
+            if (validLvlName && lastLevelNum < finalLevelNum)
+            {
+                enterText.GetComponent<TextMeshProUGUI>().text = "Press 'ENTER' to go to next level";
+                enterText.GetComponent<RectTransform>().anchoredPosition -= new Vector2(144, 0);
+            }
         }
     }
 
