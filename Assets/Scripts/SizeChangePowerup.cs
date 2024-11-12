@@ -1,5 +1,7 @@
 using System.Collections;
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum SizeChangeType
 {
@@ -21,6 +23,8 @@ public class SizeChange : MonoBehaviour
     private static PlayerStats smallStats;
     private static Coroutine sizeChangeFunc;
     private static readonly Color regenColor = new(0, 0, 0, 0.5f);
+    private readonly static string sizeChangingURL = "https://docs.google.com/forms/d/1URYzfOMw29EnC1lCHGKK_TI9W2LX6zDs24lghz9uj9k/formResponse";
+    private PlayerController otherPlayer;
 
     void Start()
     {
@@ -65,10 +69,12 @@ public class SizeChange : MonoBehaviour
         {   
             PlayerController mainPlayer = other.GetComponent<PlayerController>();
             PlayerController otherPlayer = mainPlayer.OtherPlayer;
-
+            SendSizeChangingPills(true);
+            
             // End any previous powerup effect and begin current powerup
             if (sizeChangeFunc != null) StopCoroutine(sizeChangeFunc);
             sizeChangeFunc = StartCoroutine(RevertSizesAfterTime(mainPlayer, otherPlayer));
+            // Ziang Qin's code addon
             StartCoroutine(ConsumePowerup());
         }
     }
@@ -108,6 +114,7 @@ public class SizeChange : MonoBehaviour
             yield return new WaitForSeconds(interval);
         }
 
+        SendSizeChangingPills(false);
         // Revert both players to their original sizes and stats
         SetToDefaultSize(mainPlayer, otherPlayer);
     }
@@ -238,5 +245,54 @@ public class SizeChange : MonoBehaviour
             transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
             transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
         }
+    }
+
+    // Ziang Qin's new code
+    public void SendSizeChangingPills(bool isStart)
+    {
+        //pillLocationToken is used to differientiate different pills
+        float pillLocationToken = (int)transform.position.x * 100 + transform.position.y;
+        
+        GameObject[] playerList = GameObject.FindGameObjectsWithTag("Player");
+        GameObject player1 = playerList[0];
+        GameObject player2 = playerList[1];
+
+        WWWForm form = new();
+
+        // Session ID
+        form.AddField("entry.1750140478", DataCollection.SessionID);
+        // Current build name
+        form.AddField("entry.1446046744", DataCollection.buildNo);
+        // Level
+        form.AddField("entry.2145687275", SceneManager.GetActiveScene().name);
+        // isExpanding
+        form.AddField("entry.687210033", pillLocationToken.ToString());
+        // isStart
+        form.AddField("entry.1696011394", isStart.ToString());
+        // Player X coordinate at gravity toggle location
+        form.AddField("entry.1884234040", player1.transform.position.x.ToString());
+        // Player Y coordinate at gravity toggle location
+        form.AddField("entry.849009397", player1.transform.position.y.ToString());
+
+        DataCollection.Post(sizeChangingURL, form);
+
+        WWWForm OtherPlayerform = new();
+
+        // Session ID
+        OtherPlayerform.AddField("entry.1750140478", DataCollection.SessionID);
+        // Current build name
+        OtherPlayerform.AddField("entry.1446046744", DataCollection.buildNo);
+        // Level
+        OtherPlayerform.AddField("entry.2145687275", SceneManager.GetActiveScene().name);
+        // isExpanding
+        OtherPlayerform.AddField("entry.687210033", pillLocationToken.ToString());
+        // isStart
+        OtherPlayerform.AddField("entry.1696011394", isStart.ToString());
+        // Player X coordinate at gravity toggle location
+        OtherPlayerform.AddField("entry.1884234040", player2.transform.position.x.ToString());
+        // Player Y coordinate at gravity toggle location
+        OtherPlayerform.AddField("entry.849009397", player2.transform.position.y.ToString());
+
+        DataCollection.Post(sizeChangingURL, OtherPlayerform);
     }
 }

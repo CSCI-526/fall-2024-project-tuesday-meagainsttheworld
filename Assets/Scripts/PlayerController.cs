@@ -41,6 +41,7 @@ public class PlayerController : MonoBehaviour
     private float currMaxFallSpeed = 0;
     private float relativeFallVel = 0;
     private Rigidbody2D platformRb;
+    private readonly static string gravityCounterURL = "https://docs.google.com/forms/d/12FMEMZWAwOvY1Bp0RQirwPzLJTtQAcXGL1Svm6RgX6o/formResponse";
 
     // Start is called before the first frame update
     void Start()
@@ -297,23 +298,42 @@ public class PlayerController : MonoBehaviour
             groundVector *= -1;
             gravityToggleBufferLeft = 0;
 
-            // WWWForm form = new();
-
-            // // Session ID
-            // form.AddField("", DataCollection.SessionID);
-            // // Current build name
-            // form.AddField("", DataCollection.buildNo);
-            // // Level
-            // form.AddField("", SceneManager.GetActiveScene().name);
-            // // Player ID
-            // form.AddField("", name);
-            // // Player X coordinate at gravity toggle location
-            // form.AddField("", transform.position.x.ToString());
-            // // Player Y coordinate at gravity toggle location
-            // form.AddField("", transform.position.y.ToString());
-
-            // DataCollection.Post(gravityCounterURL, form);
+            SendGravityChangePosition();
+            //StartCoroutine(/*nextStuff*/);
         }
         else gravityToggleBufferLeft--;
+    }
+
+    public void SendGravityChangePosition()
+    {
+        WWWForm form = new();
+
+        // Session ID
+        form.AddField("entry.143696455", DataCollection.SessionID);
+        // Current build name
+        form.AddField("entry.1196517597", DataCollection.buildNo);
+        // Level
+        form.AddField("entry.87724549", SceneManager.GetActiveScene().name);
+        // Player X coordinate at gravity toggle location
+        form.AddField("entry.1671942587", transform.position.x.ToString());
+        // Player Y coordinate at gravity toggle location
+        form.AddField("entry.622429265", transform.position.y.ToString());
+
+        DataCollection.Post(gravityCounterURL, form);
+
+        WWWForm OtherPlayerform = new();
+
+        // Session ID
+        OtherPlayerform.AddField("entry.143696455", DataCollection.SessionID);
+        // Current build name
+        OtherPlayerform.AddField("entry.1196517597", DataCollection.buildNo);
+        // Level
+        OtherPlayerform.AddField("entry.87724549", SceneManager.GetActiveScene().name);
+        // Player X coordinate at gravity toggle location
+        OtherPlayerform.AddField("entry.1671942587", OtherPlayer.transform.position.x.ToString());
+        // Player Y coordinate at gravity toggle location
+        OtherPlayerform.AddField("entry.622429265", OtherPlayer.transform.position.y.ToString());
+
+        DataCollection.Post(gravityCounterURL, OtherPlayerform);
     }
 }
