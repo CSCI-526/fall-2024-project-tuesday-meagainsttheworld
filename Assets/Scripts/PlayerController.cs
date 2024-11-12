@@ -319,21 +319,8 @@ public class PlayerController : MonoBehaviour
         // Player Y coordinate at gravity toggle location
         form.AddField("entry.622429265", transform.position.y.ToString());
 
+        Debug.Log(name + " gravity shift loc: " + transform.position);
+
         DataCollection.Post(gravityCounterURL, form);
-
-        WWWForm OtherPlayerform = new();
-
-        // Session ID
-        OtherPlayerform.AddField("entry.143696455", DataCollection.SessionID);
-        // Current build name
-        OtherPlayerform.AddField("entry.1196517597", DataCollection.buildNo);
-        // Level
-        OtherPlayerform.AddField("entry.87724549", SceneManager.GetActiveScene().name);
-        // Player X coordinate at gravity toggle location
-        OtherPlayerform.AddField("entry.1671942587", OtherPlayer.transform.position.x.ToString());
-        // Player Y coordinate at gravity toggle location
-        OtherPlayerform.AddField("entry.622429265", OtherPlayer.transform.position.y.ToString());
-
-        DataCollection.Post(gravityCounterURL, OtherPlayerform);
     }
 }

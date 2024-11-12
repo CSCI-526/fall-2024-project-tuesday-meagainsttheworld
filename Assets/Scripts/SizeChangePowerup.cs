@@ -24,7 +24,6 @@ public class SizeChange : MonoBehaviour
     private static Coroutine sizeChangeFunc;
     private static readonly Color regenColor = new(0, 0, 0, 0.5f);
     private readonly static string sizeChangingURL = "https://docs.google.com/forms/d/1URYzfOMw29EnC1lCHGKK_TI9W2LX6zDs24lghz9uj9k/formResponse";
-    private PlayerController otherPlayer;
 
     void Start()
     {
@@ -69,7 +68,7 @@ public class SizeChange : MonoBehaviour
         {   
             PlayerController mainPlayer = other.GetComponent<PlayerController>();
             PlayerController otherPlayer = mainPlayer.OtherPlayer;
-            SendSizeChangingPills(true);
+            SendSizeChangingPills(mainPlayer, otherPlayer, true);
             
             // End any previous powerup effect and begin current powerup
             if (sizeChangeFunc != null) StopCoroutine(sizeChangeFunc);
@@ -114,7 +113,7 @@ public class SizeChange : MonoBehaviour
             yield return new WaitForSeconds(interval);
         }
 
-        SendSizeChangingPills(false);
+        SendSizeChangingPills(mainPlayer, otherPlayer, false);
         // Revert both players to their original sizes and stats
         SetToDefaultSize(mainPlayer, otherPlayer);
     }
@@ -248,15 +247,8 @@ public class SizeChange : MonoBehaviour
     }
 
     // Ziang Qin's new code
-    public void SendSizeChangingPills(bool isStart)
+    public void SendSizeChangingPills(PlayerController mainPlayer, PlayerController otherPlayer, bool isStart)
     {
-        //pillLocationToken is used to differientiate different pills
-        float pillLocationToken = (int)transform.position.x * 100 + transform.position.y;
-        
-        GameObject[] playerList = GameObject.FindGameObjectsWithTag("Player");
-        GameObject player1 = playerList[0];
-        GameObject player2 = playerList[1];
-
         WWWForm form = new();
 
         // Session ID
@@ -266,13 +258,13 @@ public class SizeChange : MonoBehaviour
         // Level
         form.AddField("entry.2145687275", SceneManager.GetActiveScene().name);
         // isExpanding
-        form.AddField("entry.687210033", pillLocationToken.ToString());
+        form.AddField("entry.687210033", transform.position.ToString());
         // isStart
         form.AddField("entry.1696011394", isStart.ToString());
         // Player X coordinate at gravity toggle location
-        form.AddField("entry.1884234040", player1.transform.position.x.ToString());
+        form.AddField("entry.1884234040", mainPlayer.transform.position.x.ToString());
         // Player Y coordinate at gravity toggle location
-        form.AddField("entry.849009397", player1.transform.position.y.ToString());
+        form.AddField("entry.849009397", mainPlayer.transform.position.y.ToString());
 
         DataCollection.Post(sizeChangingURL, form);
 
@@ -285,13 +277,13 @@ public class SizeChange : MonoBehaviour
         // Level
         OtherPlayerform.AddField("entry.2145687275", SceneManager.GetActiveScene().name);
         // isExpanding
-        OtherPlayerform.AddField("entry.687210033", pillLocationToken.ToString());
+        OtherPlayerform.AddField("entry.687210033", transform.position.ToString());
         // isStart
         OtherPlayerform.AddField("entry.1696011394", isStart.ToString());
         // Player X coordinate at gravity toggle location
-        OtherPlayerform.AddField("entry.1884234040", player2.transform.position.x.ToString());
+        OtherPlayerform.AddField("entry.1884234040", otherPlayer.transform.position.x.ToString());
         // Player Y coordinate at gravity toggle location
-        OtherPlayerform.AddField("entry.849009397", player2.transform.position.y.ToString());
+        OtherPlayerform.AddField("entry.849009397", otherPlayer.transform.position.y.ToString());
 
         DataCollection.Post(sizeChangingURL, OtherPlayerform);
     }
