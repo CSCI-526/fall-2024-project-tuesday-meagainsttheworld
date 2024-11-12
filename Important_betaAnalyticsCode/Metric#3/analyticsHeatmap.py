@@ -83,7 +83,7 @@ def draw_graph(avg_gravity):
     plt.ylabel("Average Number of Gravity Shifts", fontsize=16)
     plt.title("Average Number of Gravity Changes per Level in Mirror Mirror", fontsize=18)
 
-    plt.xticks(fontsize=16)
+    plt.xticks(ticks=range(len(avg_gravity)), fontsize=16)
     plt.yticks(fontsize=16)
 
     for i, value in enumerate(avg_gravity):

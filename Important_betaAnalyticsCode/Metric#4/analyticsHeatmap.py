@@ -10,14 +10,14 @@ def fetch_data_from_csv(file_path):
         csvreader = csv.DictReader(csvfile)
         for row in csvreader:
             level_number = int(row['currLevel'][5])
-            pillLocationToken = float(row['pillLocationToken'])
+            pillLocation = row['pillLocation']
             isStart = 1 if row['isStart'] == 'True' else 0
             x = float(row['playerX'])
             y = float(row['playerY'])
-            if pillLocationToken not in data_points[level_number]:
-                data_points[level_number][pillLocationToken] = []  # Initialize the list for this pillLocationToken
+            if pillLocation not in data_points[level_number]:
+                data_points[level_number][pillLocation] = []  # Initialize the list for this pillLocation
             else:
-                data_points[level_number][pillLocationToken].append((isStart, x, y))
+                data_points[level_number][pillLocation].append((isStart, x, y))
     return data_points
 
 def transform_coordinates(x, y, x_start=-32, y_start=-18, x_target=2560, y_target=1440):
@@ -61,10 +61,15 @@ def apply_grid_painting(images, data_points, grid_size=(80, 45), max_intensity=2
                         cv2.rectangle(overlay_image, top_left, bottom_right, fill_color, thickness=-1)
                     if frequency_count[1] > 0:
                         grid_opacity = calculate_opacity(frequency_count[1])
-                        fill_color = (int(max_intensity * grid_opacity), 255, int(max_intensity * grid_opacity))  # Red fill
+                        fill_color = (int(max_intensity * grid_opacity), 255, int(max_intensity * grid_opacity))  # Green fill
                         top_left = (col * grid_width+2, row * grid_height+2)
                         bottom_right = ((col + 1) * grid_width-2, (row + 1) * grid_height-2)
                         cv2.rectangle(overlay_image, top_left, bottom_right, fill_color, thickness=-1)
+            center = transform_coordinates(eval(key)[0],eval(key)[1])
+            center = (int(center[0]),int(center[1]))
+            outer_radius = 10
+            cv2.circle(overlay_image, center, outer_radius, (0, 0, 255), -1)  # Fill red
+
             images_with_grid[i][key] = overlay_image
 
     return images_with_grid
@@ -77,8 +82,7 @@ if __name__ == "__main__":
 
     images_with_heatmap = apply_grid_painting(images, data_points)
     for i, val in enumerate(images_with_heatmap):
+        count = 0
         for key, img in images_with_heatmap[i].items():
-            if key%100 > 50:
-                cv2.imwrite(f"data/sizeChangingPillAnalyticsForLevel{i}_X_{key//100 + 1:.0f}_Y_{key%100-100:.0f}.png", img)
-            else:
-                cv2.imwrite(f"data/sizeChangingPillAnalyticsForLevel{i}_X_{key//100:.0f}_Y_{key%100:.0f}.png", img)
+            count += 1
+            cv2.imwrite(f"data/sizeChangingPillAnalyticsForLevel{i}Pill{count}.png", img)
