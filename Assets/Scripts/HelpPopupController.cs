@@ -11,6 +11,7 @@ public class HelpPopupController : MonoBehaviour
 
     void Start()
     {
+
         // Ensure the popup is hidden initially
         if (helpPopup != null)
         {
@@ -24,23 +25,17 @@ public class HelpPopupController : MonoBehaviour
 
     void Update()
     {
-        // Toggle the popup when the 'Tab' key is pressed
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             ToggleHelpPopup();
         }
-        // Check if the Enter key is pressed
-        if (Input.GetKeyDown(KeyCode.Return) && isPopupVisible) // KeyCode.Return corresponds to the Enter key
+        if (Input.GetKeyDown(KeyCode.Return) && isPopupVisible)
         {
-            ResumeGame();
-            // Load the specified scene
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            RestartLevel();
         }
-        if (Input.GetKeyDown(KeyCode.M) && isPopupVisible) // KeyCode.M corresponds to the m/M key
+        if (Input.GetKeyDown(KeyCode.M) && isPopupVisible)
         {
-            ResumeGame();
-            // Load the specified scene
-            SceneManager.LoadScene("MainMenu");
+            MainMenuSelect();
         }
     }
 
@@ -89,5 +84,19 @@ public class HelpPopupController : MonoBehaviour
     {
         Time.timeScale = 1; // Resume time
         isPaused = false;
+    }
+
+    public void MainMenuSelect()
+    {
+        ResumeGame();
+        Debug.Log("Loading MainMenu");
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    public void RestartLevel()
+    {
+        ResumeGame();
+        Debug.Log("Restarting current level");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
