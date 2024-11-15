@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     private bool isOnWell;
 
     public Rigidbody2D PlayerRb { get; private set; }
-    // public TrailRenderer PlayerTrail { get; private set; }
+    public TrailRenderer PlayerTrail { get; private set; }
     public PlayerController OtherPlayer { get; private set; }
 
     private Collider2D playerCollider;
@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
         if (!stats) stats = Resources.Load<PlayerStats>("Default Stats");
 
         PlayerRb = GetComponent<Rigidbody2D>();
-        // PlayerTrail = GetComponent<TrailRenderer>();
+        PlayerTrail = GetComponent<TrailRenderer>();
         playerCollider = GetComponent<Collider2D>();
         baseLayerNum = gameObject.layer;
         playerLayerMask = (1 << baseLayerNum) | (1 << 8); // 8 is Gray's layer

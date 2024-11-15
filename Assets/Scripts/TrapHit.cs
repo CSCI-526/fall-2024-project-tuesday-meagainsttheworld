@@ -19,7 +19,7 @@ public class TrapHit : MonoBehaviour
     {
         GetComponent<Collider2D>().enabled = false;
         GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-        // GetComponent<TrailRenderer>().enabled = false;
+        GetComponent<TrailRenderer>().enabled = false;
         GetComponent<SpriteRenderer>().enabled = false;
         transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
         transform.GetChild(0).GetComponent<ParticleSystem>().Play();
