@@ -24,7 +24,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool isOnPlatform = false;
     [SerializeField] private bool goingAgainstWall = false;
     [SerializeField] private bool justWallJumped = false;
-    private bool isOnWell;
+    private bool isOnWell = false;
+    private bool isInWell = false;
 
     public Rigidbody2D PlayerRb { get; private set; }
     public TrailRenderer PlayerTrail { get; private set; }
@@ -123,15 +124,13 @@ public class PlayerController : MonoBehaviour
             // For relative velocity with respect to the platform the player is on
             bool movingGround = false;
             if (groundCast.collider && platformRb) movingGround = groundCast.collider.CompareTag("Platform") || groundCast.collider.CompareTag("Well");
-            float platformVel = (IsGrounded && movingGround) || (isOnPlatform && goingAgainstWall) ? platformRb.velocity.x : 0;
+            float platformVel = !isInWell && ((IsGrounded && movingGround) || (isOnPlatform && goingAgainstWall)) ? platformRb.velocity.x : 0;
             
             float velCheck = stats.moveSpeed * moveInput.x + platformVel;
 
             float velDelta = velCheck - PlayerRb.velocity.x;
 
             Vector2 forceReq = new(PlayerRb.mass * velDelta / Time.fixedDeltaTime, 0);
-
-            if (isOnWell) platformVel = 0;
 
             // Conserving momentum from speed-up
             if (Math.Abs(PlayerRb.velocity.x) > (stats.moveSpeed + Math.Abs(platformVel))) forceReq *= stats.momentumResist;
@@ -182,12 +181,17 @@ public class PlayerController : MonoBehaviour
         {
             PlayerRb.gravityScale = 0;
             gameObject.layer = 9;
+            isInWell = true;
         }
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Well")) gameObject.layer = baseLayerNum;
+        if (other.gameObject.CompareTag("Well"))
+        {
+            gameObject.layer = baseLayerNum;
+            isInWell = false;
+        }
     }
 
     void OnCollisionEnter2D(Collision2D other)
