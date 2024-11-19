@@ -9,6 +9,8 @@ def fetch_data_from_csv(file_path):
         csvreader = csv.DictReader(csvfile)
         for row in csvreader:
             level_number = int(row['currLevel'][5])
+            if level_number <= 2:
+                if int(row['build']) < 4: continue
             x = float(row['playerX'])
             y = float(row['playerY'])
             data_points.append((level_number, x, y))
@@ -20,7 +22,7 @@ def transform_coordinates(x, y, x_start=-32, y_start=-18, x_target=2560, y_targe
     return x_transformed, y_transformed
 
 def calculate_opacity(death_count):
-    return -math.log10(death_count) * 0.5 + 0.7
+    return -math.log10(death_count) * 1.2 + 0.9
 
 # Apply grid-based painting with red fill and borders based on death counts
 def apply_grid_painting(images, data_points, grid_size=(80, 45), max_intensity=255):
@@ -52,7 +54,10 @@ def apply_grid_painting(images, data_points, grid_size=(80, 45), max_intensity=2
                     grid_opacity = calculate_opacity(death_count)
 
                     # Define color intensity based on calculated opacities
-                    fill_color = (int(max_intensity * grid_opacity), int(max_intensity * grid_opacity), 255)  # Red fill
+                    if grid_opacity >= 0:
+                        fill_color = (int(max_intensity * grid_opacity), int(max_intensity * grid_opacity), 255)  # Red fill
+                    else:
+                        fill_color = (0, 0, int(max_intensity * grid_opacity + max_intensity))  # Darker Red fill
 
                     # Define cell boundaries
                     top_left = (col * grid_width+2, row * grid_height+2)

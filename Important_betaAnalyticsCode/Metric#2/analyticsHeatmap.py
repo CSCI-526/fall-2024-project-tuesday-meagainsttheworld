@@ -9,6 +9,8 @@ def fetch_data_from_csv(file_path):
         csvreader = csv.DictReader(csvfile)
         for row in csvreader:
             level_number = int(row['currLevel'][5])
+            if level_number <= 2:
+                if int(row['build']) < 4: continue
             x = float(row['playerX'])
             y = float(row['playerY'])
             waitTime = float(row['waitTime'])
@@ -20,8 +22,11 @@ def transform_coordinates(x, y, x_start=-32, y_start=-18, x_target=2560, y_targe
     y_transformed = 1440 - ((y - y_start) * y_target / 36)
     return x_transformed, y_transformed
 
-def calculate_opacity(wait_count):
-    return -math.log10(wait_count) * 0.3 + 0.8
+def calculate_opacity(wait_count,i):
+    if i > 0:
+        return -math.log10(wait_count) * 0.7 + 1.2
+    else:
+        return -math.log10(wait_count) * 1.12 + 2.4
 
 def apply_grid_painting(images, data_points, grid_size=(80, 45), max_intensity=255):
     images_with_grid = []
@@ -46,11 +51,13 @@ def apply_grid_painting(images, data_points, grid_size=(80, 45), max_intensity=2
         for row in range(grid_size[1]):
             for col in range(grid_size[0]):
                 wait_count = grid_counts[row, col]
-                if wait_count > 0:
-                    grid_opacity = calculate_opacity(wait_count)
-
+                if wait_count > 20 or (i > 0 and wait_count > 3):
+                    grid_opacity = calculate_opacity(wait_count,i)
+                    if grid_opacity >= 0:
+                        fill_color = (255, int(max_intensity * grid_opacity), int(max_intensity * grid_opacity))  # Blue fill
+                    else:
+                        fill_color = (int(max_intensity * grid_opacity + max_intensity), 0, 0)  # Darker Blue fill
                     # Define color intensity based on calculated opacities
-                    fill_color = (255, int(max_intensity * grid_opacity), int(max_intensity * grid_opacity))  # Blue fill
 
                     # Define cell boundaries
                     top_left = (col * grid_width+2, row * grid_height+2)
