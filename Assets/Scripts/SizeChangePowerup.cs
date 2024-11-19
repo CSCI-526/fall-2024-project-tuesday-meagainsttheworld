@@ -176,13 +176,15 @@ public class SizeChange : MonoBehaviour
         }
 
         mainPlayer.gameObject.transform.localScale *= sizeChange;
-        // mainPlayer.PlayerTrail.widthMultiplier *= sizeChange;
+        mainPlayer.PlayerTrail.widthMultiplier *= sizeChange;
+        mainPlayer.PlayerTrail.time *= sizeChange;
         mainPlayer.transform.GetChild(0).localScale *= sizeChange;
         mainPlayer.PlayerRb.mass *= massChange;
         mainPlayer.stats = mainStats;
 
         otherPlayer.gameObject.transform.localScale /= sizeChange;
-        // otherPlayer.PlayerTrail.widthMultiplier /= sizeChange;
+        otherPlayer.PlayerTrail.widthMultiplier /= sizeChange;
+        otherPlayer.PlayerTrail.time /= sizeChange;
         otherPlayer.transform.GetChild(0).localScale /= sizeChange;
         otherPlayer.PlayerRb.mass /= massChange;
         otherPlayer.stats = otherStats;
@@ -191,13 +193,15 @@ public class SizeChange : MonoBehaviour
     private void SetToDefaultSize(PlayerController mainPlayer, PlayerController otherPlayer)
     {
         mainPlayer.gameObject.transform.localScale = Vector3.one;
-        // mainPlayer.PlayerTrail.widthMultiplier = 1;
+        mainPlayer.PlayerTrail.widthMultiplier = 1;
+        mainPlayer.PlayerTrail.time = 0.25f;
         mainPlayer.transform.GetChild(0).localScale = Vector3.one;
         mainPlayer.PlayerRb.mass = 1;
         mainPlayer.stats = defaultStats;
 
         otherPlayer.gameObject.transform.localScale = Vector3.one;
-        // otherPlayer.PlayerTrail.widthMultiplier = 1;
+        otherPlayer.PlayerTrail.widthMultiplier = 1;
+        otherPlayer.PlayerTrail.time = 0.25f;
         otherPlayer.transform.GetChild(0).localScale = Vector3.one;
         otherPlayer.PlayerRb.mass = 1;
         otherPlayer.stats = defaultStats;

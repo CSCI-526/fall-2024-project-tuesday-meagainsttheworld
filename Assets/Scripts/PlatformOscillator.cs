@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class HorizontalOscillator : MonoBehaviour
+public class PlatformOscillator : MonoBehaviour
 {
     public enum OscillationType
     {
