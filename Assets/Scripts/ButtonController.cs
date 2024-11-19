@@ -1,24 +1,21 @@
+using System;
 using UnityEngine;
 
 public class ButtonController : MonoBehaviour
 {
     public GameObject wall;
+    private Vector3 startPos;
 
-
-    private void OnCollisionEnter2D(Collision2D other)
+    void Start()
     {
-        Debug.Log("Trigger entered by: " + other.gameObject.name);
-        if (other.gameObject.CompareTag("Player"))
-        {
-            wall.SetActive(false);
-        }
+        startPos = transform.localPosition;
     }
 
-    private void OnCollisionExit2D(Collision2D other)
+    void Update()
     {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            wall.SetActive(true);
-        }
+        float posDiff = Math.Abs(startPos.y - transform.localPosition.y);
+        if (posDiff > 0.95) transform.localPosition = Vector3.zero;
+        if (posDiff > 0.2) wall.SetActive(false);
+        else wall.SetActive(true);
     }
 }
