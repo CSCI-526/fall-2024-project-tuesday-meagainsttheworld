@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public class DataCollection
 {
-    public readonly static int buildNo = 4;
+    public readonly static int buildNo = 5;
     public static string SessionID { get; private set; }
 
     [RuntimeInitializeOnLoadMethod]
