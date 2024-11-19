@@ -24,6 +24,8 @@ def transform_coordinates(x, y, x_start=-32, y_start=-18, x_target=2560, y_targe
     return x_transformed, y_transformed
 
 def calculate_opacity(change_count):
+    # light green boxes means 10 gravity changes
+    # dark green boxes means 1000 gravity changes
     return -math.log10(change_count) * 1.4 + 2.2
 
 # Apply grid-based painting with red fill and borders based on death counts
