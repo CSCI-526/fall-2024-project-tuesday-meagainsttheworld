@@ -18,7 +18,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float wallJumpRecovery = 0;
 
     [field: SerializeField] public bool IsGrounded { get; private set; }
-    // [SerializeField] private bool jumping = false;
     [SerializeField] private bool isOnLeftWall = false;
     [SerializeField] private bool isOnRightWall = false;
     [SerializeField] private bool isOnPlatform = false;
@@ -44,7 +43,6 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D platformRb;
     private readonly static string gravityCounterURL = "https://docs.google.com/forms/d/12FMEMZWAwOvY1Bp0RQirwPzLJTtQAcXGL1Svm6RgX6o/formResponse";
 
-    // Start is called before the first frame update
     void Start()
     {
         if (!stats) stats = Resources.Load<PlayerStats>("Default Stats");
@@ -91,7 +89,6 @@ public class PlayerController : MonoBehaviour
         gravityToggleAction.Disable();
     }
 
-    // Update is called once per frame
     void Update()
     {
         playerLayerMask = (1 << gameObject.layer) | (1 << 8);
@@ -119,7 +116,6 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    /// This function is called every fixed framerate frame, if the MonoBehaviour is enabled.
     void FixedUpdate()
     {
         // Horizontal Movement
@@ -208,7 +204,6 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        // jumping = false;
         isTouchingPlatform = other.gameObject.CompareTag("Platform");
         if (isTouchingPlatform) platformRb = other.transform.GetComponent<Rigidbody2D>();
     }
@@ -248,23 +243,8 @@ public class PlayerController : MonoBehaviour
 
         if (context.phase == InputActionPhase.Started)
         {
-            // jumping = true;
             jumpBufferLeft = jumpBuffer;
         }
-
-        // // Jump Cancel in progress
-        // if (context.phase == InputActionPhase.Canceled && jumping)
-        // {
-        //     if (Math.Abs(relativeFallVel) > stats.airHangThreshold)
-        //     {
-        //         PlayerRb.gravityScale = 0.5f * stats.baseGravity * -groundVector.y;
-
-        //         float velDelta = (Math.Abs(relativeFallVel) - stats.airHangThreshold) * groundVector.y;
-        //         Vector2 forceReq = new(0, PlayerRb.mass * velDelta / Time.fixedDeltaTime);
-        //         PlayerRb.AddForce(forceReq);
-        //     }
-        //     jumping = false;
-        // }
     }
 
     private void ExecuteJump()
@@ -304,8 +284,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // private readonly static string gravityCounterURL = "";
-
     private void ExecuteGravityToggle()
     {
         if (IsGrounded || OtherPlayer.IsGrounded)
@@ -315,7 +293,6 @@ public class PlayerController : MonoBehaviour
             gravityToggleBufferLeft = 0;
 
             SendGravityChangePosition();
-            //StartCoroutine(/*nextStuff*/);
         }
         else gravityToggleBufferLeft--;
     }
