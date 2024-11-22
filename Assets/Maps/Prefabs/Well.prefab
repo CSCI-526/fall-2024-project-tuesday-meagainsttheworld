@@ -266,7 +266,7 @@ GameObject:
   - component: {fileID: 2887840556648415769}
   m_Layer: 7
   m_Name: WellLayerBox
-  m_TagString: Well
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -502,7 +502,7 @@ GameObject:
   - component: {fileID: 7029125743170740560}
   m_Layer: 8
   m_Name: Well
-  m_TagString: Well
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

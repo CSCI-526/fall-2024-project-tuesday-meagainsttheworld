@@ -22,10 +22,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool isOnLeftWall = false;
     [SerializeField] private bool isOnRightWall = false;
     [SerializeField] private bool isOnPlatform = false;
+    [SerializeField] private bool isTouchingPlatform = false;
     [SerializeField] private bool goingAgainstWall = false;
     [SerializeField] private bool justWallJumped = false;
-    private bool isOnWell = false;
-    private bool isInWell = false;
+    [SerializeField] private bool isInWell = false;
 
     public Rigidbody2D PlayerRb { get; private set; }
     public TrailRenderer PlayerTrail { get; private set; }
@@ -101,7 +101,11 @@ public class PlayerController : MonoBehaviour
         
         IsGrounded = groundCast;
 
-        if (IsGrounded) justWallJumped = false;
+        if (IsGrounded)
+        {
+            isOnPlatform = groundCast.collider.CompareTag("Platform");
+            justWallJumped = false;
+        }
 
         if (jumpBufferLeft > 0) ExecuteJump();
 
@@ -109,7 +113,7 @@ public class PlayerController : MonoBehaviour
 
         goingAgainstWall = (moveInput.x == -1 && isOnLeftWall) || (moveInput.x == 1 && isOnRightWall);
 
-        currMaxFallSpeed = goingAgainstWall ? stats.maxFallSpeed * 0.2f : stats.maxFallSpeed;
+        currMaxFallSpeed = goingAgainstWall ? stats.maxFallSpeed * (1 - stats.wallSlideSlow) : stats.maxFallSpeed;
 
         relativeFallVel = PlayerRb.velocity.y * groundVector.y;
     }
@@ -122,9 +126,7 @@ public class PlayerController : MonoBehaviour
         if (moveInput.x != 0 || IsGrounded)
         {
             // For relative velocity with respect to the platform the player is on
-            bool movingGround = false;
-            if (groundCast.collider && platformRb) movingGround = groundCast.collider.CompareTag("Platform") || groundCast.collider.CompareTag("Well");
-            float platformVel = !isInWell && ((IsGrounded && movingGround) || (isOnPlatform && goingAgainstWall)) ? platformRb.velocity.x : 0;
+            float platformVel = !isInWell && isOnPlatform ? platformRb.velocity.x : 0;
             
             float velCheck = stats.moveSpeed * moveInput.x + platformVel;
 
@@ -185,6 +187,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Well")) 
+        {
+            PlayerRb.gravityScale = 0;
+            gameObject.layer = 9;
+            isInWell = true;
+        }
+    }
+
     void OnTriggerExit2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("Well"))
@@ -197,9 +209,8 @@ public class PlayerController : MonoBehaviour
     void OnCollisionEnter2D(Collision2D other)
     {
         // jumping = false;
-        isOnPlatform = other.gameObject.CompareTag("Platform");
-        isOnWell = other.gameObject.CompareTag("Well");
-        if (isOnPlatform || isOnWell) platformRb = other.transform.GetComponent<Rigidbody2D>();
+        isTouchingPlatform = other.gameObject.CompareTag("Platform");
+        if (isTouchingPlatform) platformRb = other.transform.GetComponent<Rigidbody2D>();
     }
 
     void OnCollisionStay2D(Collision2D other)
@@ -217,12 +228,13 @@ public class PlayerController : MonoBehaviour
             GetComponent<TrapHit>().SendDeath();
             Debug.Log("Crushed");
         }
+
+        isTouchingPlatform = other.gameObject.CompareTag("Platform");
     }
 
     void OnCollisionExit2D(Collision2D other)
     {
-        isOnPlatform = false;
-        isOnWell = false;
+        isTouchingPlatform = false;
     }
 
     private void OnMove(InputAction.CallbackContext context)

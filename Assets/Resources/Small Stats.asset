@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f699e57dc53bb184d80db8229f5ed58d, type: 3}
   m_Name: Small Stats
   m_EditorClassIdentifier: 
-  moveSpeed: 15
+  moveSpeed: 12
   maxFallSpeed: 50
-  wallSlideSlow: 0.1
+  wallSlideSlow: 0.95
   airAdjustMultiplier: 0.2
   momentumResist: 0.1
   jumpHeight: 3.1
