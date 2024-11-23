@@ -21,7 +21,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Level1.unity
     guid: dd4f27cca98034b99950f57fe7afd2ec
   - enabled: 1
-    path: Assets/Scenes/Level2.unity
+    path: Assets/Scenes/Legacy_Level2_gold.unity
     guid: 38bae379bc391a44299ed3dcd0d1d382
   - enabled: 1
     path: Assets/Scenes/YouWin.unity
