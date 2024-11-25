@@ -11,6 +11,9 @@ public class SceneSwitcher : MonoBehaviour
 
     void Start()
     {
+        SpawnpointManager.playerSpawnStates.Clear();
+        SpawnpointManager.lastCheckpointNum = 0;
+        CameraManager.currCam = 1;
         if (SceneManager.GetActiveScene().name == "YouWin")
         {
             bool validLvlName = int.TryParse(prevLevel[(prevLevel.LastIndexOf('l') + 1)..], out int lastLevelNum);
