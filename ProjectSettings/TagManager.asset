@@ -49,3 +49,6 @@ TagManager:
   - name: Background
     uniqueID: 1192607547
     locked: 0
+  - name: UIOverlay
+    uniqueID: 1052219567
+    locked: 0
