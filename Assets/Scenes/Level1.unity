@@ -83836,7 +83836,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 10
-    OrthographicSize: 20.0031
+    OrthographicSize: 18
     NearClipPlane: 0.3
     FarClipPlane: 5000
     Dutch: 0
@@ -110493,7 +110493,7 @@ Camera:
   far clip plane: 5000
   field of view: 10
   orthographic: 1
-  orthographic size: 11
+  orthographic size: 18
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -110518,7 +110518,7 @@ Transform:
   m_GameObject: {fileID: 1840342462}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1.00049, y: 1.00049, z: 1.00049}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -110830,7 +110830,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6111143387983596393, guid: 47d3e189630028a40b4ec149f3d54b10, type: 3}
       propertyPath: m_Name
-      value: New UI Canvas
+      value: UI Canvas
       objectReference: {fileID: 0}
     - target: {fileID: 6208577952677327908, guid: 47d3e189630028a40b4ec149f3d54b10, type: 3}
       propertyPath: m_Pivot.x
