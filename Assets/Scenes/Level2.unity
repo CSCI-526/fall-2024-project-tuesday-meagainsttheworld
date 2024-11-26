@@ -1672,10 +1672,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 560131497356195840, guid: 0622f0c3eb48230419ec6e908a86db48, type: 3}
-      propertyPath: m_PixelPerfect
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 831073628888171155, guid: 0622f0c3eb48230419ec6e908a86db48, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
@@ -1684,17 +1680,9 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1215340753880680346, guid: 0622f0c3eb48230419ec6e908a86db48, type: 3}
-      propertyPath: m_IgnoreReversedGraphics
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1747402097119122924, guid: 0622f0c3eb48230419ec6e908a86db48, type: 3}
       propertyPath: m_Name
       value: UI Canvas
-      objectReference: {fileID: 0}
-    - target: {fileID: 1747402097119122924, guid: 0622f0c3eb48230419ec6e908a86db48, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2221734774800909768, guid: 0622f0c3eb48230419ec6e908a86db48, type: 3}
       propertyPath: m_SizeDelta.x

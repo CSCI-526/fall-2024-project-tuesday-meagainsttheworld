@@ -13,7 +13,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private InputAction gravityToggleAction;
 
     [SerializeField, Range(0, 120)] private int jumpBuffer = 20;
-    [SerializeField, Range(0, 120)] private int gravityToggleBuffer = 20;
 
     [SerializeField] private float wallJumpRecovery = 0;
 
@@ -33,10 +32,9 @@ public class PlayerController : MonoBehaviour
     private Collider2D playerCollider;
     private int playerLayerMask;
     private int baseLayerNum;
-    private Vector2 groundVector = Vector2.down;
+    [HideInInspector] public Vector2 groundVector = Vector2.down;
     private RaycastHit2D groundCast;
     private int jumpBufferLeft = 0;
-    private int gravityToggleBufferLeft = 0;
     private int wallJumpDir = 0;
     private float currMaxFallSpeed = 0;
     private float relativeFallVel = 0;
@@ -50,9 +48,10 @@ public class PlayerController : MonoBehaviour
         PlayerRb = GetComponent<Rigidbody2D>();
         PlayerTrail = GetComponent<TrailRenderer>();
         playerCollider = GetComponent<Collider2D>();
+        platformRb = new();
         baseLayerNum = gameObject.layer;
         playerLayerMask = (1 << baseLayerNum) | (1 << 8); // 8 is Gray's layer
-        groundVector *= PlayerRb.gravityScale;
+        groundVector.y = -PlayerRb.gravityScale;
 
         GameObject[] playerList = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject playerObj in playerList)
@@ -103,10 +102,9 @@ public class PlayerController : MonoBehaviour
             isOnPlatform = groundCast.collider.CompareTag("Platform");
             justWallJumped = false;
         }
+        else isOnPlatform = false;
 
         if (jumpBufferLeft > 0) ExecuteJump();
-
-        if (gravityToggleBufferLeft > 0) ExecuteGravityToggle();
 
         goingAgainstWall = (moveInput.x == -1 && isOnLeftWall) || (moveInput.x == 1 && isOnRightWall);
 
@@ -280,21 +278,14 @@ public class PlayerController : MonoBehaviour
         if (HelpPopupController.isPaused) return;
         if (context.phase == InputActionPhase.Started)
         {
-            gravityToggleBufferLeft = gravityToggleBuffer;
-        }
-    }
+            if (IsGrounded || OtherPlayer.IsGrounded)
+            {
+                PlayerRb.gravityScale *= -1;
+                groundVector *= -1;
 
-    private void ExecuteGravityToggle()
-    {
-        if (IsGrounded || OtherPlayer.IsGrounded)
-        {
-            PlayerRb.gravityScale *= -1;
-            groundVector *= -1;
-            gravityToggleBufferLeft = 0;
-
-            SendGravityChangePosition();
+                SendGravityChangePosition();
+            }
         }
-        else gravityToggleBufferLeft--;
     }
 
     public void SendGravityChangePosition()
