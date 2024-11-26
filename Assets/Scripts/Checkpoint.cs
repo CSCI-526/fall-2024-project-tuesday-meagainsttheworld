@@ -23,8 +23,8 @@ public class Checkpoint : MonoBehaviour
     {
         if (SpawnpointManager.lastCheckpointNum < checkpointNum && !(p1Reached && p2Reached) && other.CompareTag("Player"))
         {
-            if (!p1Reached && other.name.Equals("Player1")) p1Reached = true;
-            else if (!p2Reached && other.name.Equals("Player2")) p2Reached = true;
+            if (other.name.Equals("Player1")) p1Reached = true;
+            else p2Reached = true;
             
             if (p1Reached && p2Reached)
             {

@@ -4,8 +4,8 @@ public class AspectRatioAdjust : MonoBehaviour
 {
     private new Camera camera;
     private readonly float defaultAspectRatio = 16.0f / 9.0f;
+    private float prevAspect = 0;
 
-    // Start is called before the first frame update
     void Start()
     {
         camera = GetComponent<Camera>();
@@ -19,6 +19,10 @@ public class AspectRatioAdjust : MonoBehaviour
 
     private void AdjustAspectRatio()
     {
+        if (prevAspect == camera.aspect) return;
+
+        prevAspect = camera.aspect;
+
         if (defaultAspectRatio == camera.aspect || defaultAspectRatio < camera.aspect)
         {
             if (camera.orthographicSize == 18) return;

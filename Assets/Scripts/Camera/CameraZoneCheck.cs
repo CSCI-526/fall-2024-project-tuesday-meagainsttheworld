@@ -20,8 +20,8 @@ public class CameraZoneCheck : MonoBehaviour
     {
         if (!(p1Present && p2Present) && other.CompareTag("Player"))
         {
-            if (!p1Present && other.name.Equals("Player1")) p1Present = true;
-            else if (!p2Present && other.name.Equals("Player2")) p2Present = true;
+            if (other.name.Equals("Player1")) p1Present = true;
+            else p2Present = true;
 
             if (p1Present && p2Present)
             {
@@ -35,12 +35,15 @@ public class CameraZoneCheck : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (!p1Present && other.name.Equals("Player1")) p1Present = false;
-        else if (!p2Present && other.name.Equals("Player2")) p2Present = false;
-
-        if (p1Present != p2Present && camManager.TransitionCamPresent)
+        if (other.CompareTag("Player"))
         {
-            transform.parent.GetComponent<CameraManager>().LoadCam(1);
+            if (other.name.Equals("Player1")) p1Present = false;
+            else p2Present = false;
+
+            if (p1Present != p2Present && camManager.TransitionCamPresent)
+            {
+                transform.parent.GetComponent<CameraManager>().LoadCam(1);
+            }
         }
     }
 }
