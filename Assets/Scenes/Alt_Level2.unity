@@ -37936,7 +37936,7 @@ MonoBehaviour:
   m_StreamingVersion: 20170927
   m_Priority: 10
   m_StandbyUpdate: 2
-  m_LookAt: {fileID: 0}
+  m_LookAt: {fileID: 139001407}
   m_Follow: {fileID: 139001407}
   m_Lens:
     FieldOfView: 10
@@ -40979,7 +40979,6 @@ GameObject:
   - component: {fileID: 1767312133}
   - component: {fileID: 1767312132}
   - component: {fileID: 1767312131}
-  - component: {fileID: 1767312130}
   - component: {fileID: 1767312135}
   m_Layer: 0
   m_Name: Main Camera
@@ -40988,18 +40987,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1767312130
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1767312129}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 982b049f6b5077c49a046d7982d5519f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1767312131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41112,7 +41099,7 @@ Transform:
   m_GameObject: {fileID: 1767312129}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12.434895, y: -7, z: -10}
+  m_LocalPosition: {x: -14.400002, y: -7, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
