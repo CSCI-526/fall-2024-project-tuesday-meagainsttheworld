@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Level0.unity
     guid: 4db3eada8be755e4fbb3bd0f8ef4bdb5
   - enabled: 1
-    path: Assets/Scenes/Level1.unity
+    path: Assets/Scenes/Legacy_Level1 - Gold progress.unity
     guid: dd4f27cca98034b99950f57fe7afd2ec
   - enabled: 1
     path: Assets/Scenes/Level2.unity
