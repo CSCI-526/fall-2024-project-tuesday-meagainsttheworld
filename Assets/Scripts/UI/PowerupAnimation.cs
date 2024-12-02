@@ -2,17 +2,22 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PillInteraction : MonoBehaviour
+public class PowerupAnimation : MonoBehaviour
 {
     public RectTransform player1;
     public RectTransform player2;
     public Image pill1;
     public Image pill2;
+    public GameObject powerupAnimationPanel;
+    public Image whiteBackground;
+    public Image blackBackground;
+    public Button closeButton;
     public float effectDuration = 5f;
     public float sizeMultiplier = 2f;
     public float moveSpeed = 100f;
     public float blinkInterval = 0.1f;
-    public float extraMoveDistance = 50f; // Distance to move past the pill
+    public float extraMoveDistance = 50f;
+    public float panelZoomDuration = 1f;
 
     private Vector3 originalScalePlayer1;
     private Vector3 originalScalePlayer2;
@@ -21,73 +26,143 @@ public class PillInteraction : MonoBehaviour
     private Color originalColorPill1;
     private Color originalColorPill2;
     private Color grayColor = Color.gray;
+    private bool isAnimationPlaying = false;
+    public static bool hasAnimationPlayed = false;
 
-    private void Start()
+    private void Awake()
     {
         originalScalePlayer1 = player1.localScale;
         originalScalePlayer2 = player2.localScale;
-        originalPosPlayer1 = player1.position;
-        originalPosPlayer2 = player2.position;
+        originalPosPlayer1 = player1.anchoredPosition;
+        originalPosPlayer2 = player2.anchoredPosition;
         originalColorPill1 = pill1.color;
         originalColorPill2 = pill2.color;
-        StartCoroutine(InteractionSequence());
+
+        powerupAnimationPanel.SetActive(false);
+        SetVisibility(false);
+        closeButton.gameObject.SetActive(false);
+        closeButton.onClick.AddListener(CloseAnimation);
     }
+
+    public void StartAnimation()
+    {
+        if (!isAnimationPlaying && !hasAnimationPlayed)
+        {
+            StartCoroutine(AnimationSequence());
+        }
+    }
+
+    private IEnumerator AnimationSequence()
+    {
+        isAnimationPlaying = true;
+        hasAnimationPlayed = true;
+        Time.timeScale = 0f; // Freeze gameplay
+
+        powerupAnimationPanel.SetActive(true);
+        closeButton.gameObject.SetActive(true);
+        yield return StartCoroutine(ZoomInPanel());
+
+        SetVisibility(true);
+        yield return null;
+
+        yield return StartCoroutine(InteractionSequence());
+
+        // Wait for close button to be clicked
+        yield return new WaitUntil(() => !isAnimationPlaying);
+    }
+
+    private void CloseAnimation()
+    {
+        StopAllCoroutines();
+        powerupAnimationPanel.SetActive(false);
+        closeButton.gameObject.SetActive(false);
+        SetVisibility(false);
+        Time.timeScale = 1f; // Unfreeze gameplay
+        isAnimationPlaying = false;
+    }
+
+    private IEnumerator ZoomInPanel()
+    {
+        RectTransform panelTransform = powerupAnimationPanel.GetComponent<RectTransform>();
+        Vector3 startScale = Vector3.one * 0.1f;
+        Vector3 endScale = Vector3.one;
+
+        panelTransform.localScale = startScale;
+
+        float elapsed = 0f;
+        while (elapsed < panelZoomDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = elapsed / panelZoomDuration;
+            panelTransform.localScale = Vector3.Lerp(startScale, endScale, t);
+            yield return null;
+        }
+
+        panelTransform.localScale = endScale;
+    }
+
+    private void SetVisibility(bool isVisible)
+    {
+        player1.gameObject.SetActive(isVisible);
+        player2.gameObject.SetActive(isVisible);
+        pill1.gameObject.SetActive(isVisible);
+        pill2.gameObject.SetActive(isVisible);
+    }
+
 
     private IEnumerator InteractionSequence()
     {
         yield return MovePlayerToPillAndGrow(player1, pill1.rectTransform, true);
-        yield return new WaitForSeconds(effectDuration);
+        yield return new WaitForSecondsRealtime(4f);
         yield return BlinkPlayers();
-        ResetPlayerSizes();
-        SetPillActive(pill1);
+        ResetPlayerSizesAndPills();
+        yield return new WaitForSecondsRealtime(1f);
 
         yield return MovePlayerToPillAndGrow(player2, pill2.rectTransform, false);
-        yield return new WaitForSeconds(effectDuration);
+        yield return new WaitForSecondsRealtime(4f);
         yield return BlinkPlayers();
-        ResetPlayerSizes();
-        SetPillActive(pill2);
+        ResetPlayerSizesAndPills();
     }
 
     private IEnumerator MovePlayerToPillAndGrow(RectTransform player, RectTransform pill, bool isGrowing)
     {
-        Vector3 originalPos = player.position;
+        Vector2 originalPos = player.anchoredPosition;
+        Vector2 pillPos = pill.anchoredPosition;
 
-        // Move to the pill
-        while (Vector3.Distance(player.position, pill.position) > 1f)
+        while (Vector2.Distance(player.anchoredPosition, pillPos) > 1f)
         {
-            player.position = Vector3.MoveTowards(player.position, pill.position, moveSpeed * Time.deltaTime);
+            player.anchoredPosition = Vector2.MoveTowards(player.anchoredPosition, pillPos, moveSpeed * Time.unscaledDeltaTime);
             yield return null;
         }
 
-        // Player has reached the pill
         SetPillInactive(pill.GetComponent<Image>());
 
-        // Instant scaling
         if (isGrowing)
         {
             player.localScale = originalScalePlayer1 * sizeMultiplier;
             AdjustVerticalPosition(player, originalPos, true);
-            player2.localScale = originalScalePlayer2 / sizeMultiplier; // Shrink other player
+
+            player2.localScale = originalScalePlayer2 / sizeMultiplier;
             AdjustVerticalPosition(player2, originalPosPlayer2, false);
         }
         else
         {
+            player1.localScale = originalScalePlayer1 * sizeMultiplier;
+            AdjustVerticalPosition(player1, originalPosPlayer1, true);
+
             player.localScale = originalScalePlayer2 / sizeMultiplier;
             AdjustVerticalPosition(player, originalPos, false);
-            player1.localScale = originalScalePlayer1 * sizeMultiplier; // Grow other player
-            AdjustVerticalPosition(player1, originalPosPlayer1, true);
         }
 
-        // Continue moving past the pill
-        Vector3 extraMovePosition = player.position + Vector3.right * extraMoveDistance;
-        while (Vector3.Distance(player.position, extraMovePosition) > 1f)
+        Vector2 extraMovePosition = player.anchoredPosition + Vector2.right * extraMoveDistance;
+        while (Vector2.Distance(player.anchoredPosition, extraMovePosition) > 1f)
         {
-            player.position = Vector3.MoveTowards(player.position, extraMovePosition, moveSpeed * Time.deltaTime);
+            player.anchoredPosition = Vector2.MoveTowards(player.anchoredPosition, extraMovePosition, moveSpeed * Time.unscaledDeltaTime);
             yield return null;
         }
     }
 
-    private void AdjustVerticalPosition(RectTransform player, Vector3 originalPosition, bool isGrowing)
+    private void AdjustVerticalPosition(RectTransform player, Vector2 originalPosition, bool isGrowing)
     {
         float originalHeight = player.rect.height * originalScalePlayer1.y;
         float newHeight = player.rect.height * player.localScale.y;
@@ -95,11 +170,11 @@ public class PillInteraction : MonoBehaviour
 
         if (isGrowing)
         {
-            player.position = new Vector3(player.position.x, originalPosition.y + heightDifference / 2, player.position.z);
+            player.anchoredPosition = new Vector2(player.anchoredPosition.x, originalPosition.y + heightDifference / 2);
         }
         else
         {
-            player.position = new Vector3(player.position.x, originalPosition.y - heightDifference / 2, player.position.z);
+            player.anchoredPosition = new Vector2(player.anchoredPosition.x, originalPosition.y - heightDifference / 2);
         }
     }
 
@@ -107,7 +182,7 @@ public class PillInteraction : MonoBehaviour
     {
         IEnumerator blinkPlayer1 = BlinkPlayer(player1.GetComponent<Image>());
         IEnumerator blinkPlayer2 = BlinkPlayer(player2.GetComponent<Image>());
-        
+
         yield return StartCoroutine(RunParallelCoroutines(blinkPlayer1, blinkPlayer2));
     }
 
@@ -121,7 +196,7 @@ public class PillInteraction : MonoBehaviour
         while (elapsedTime < 1f)
         {
             playerImage.color = (playerImage.color == originalColor) ? grayColor : originalColor;
-            yield return new WaitForSeconds(blinkInterval);
+            yield return new WaitForSecondsRealtime(blinkInterval);
             elapsedTime += blinkInterval;
         }
 
@@ -145,23 +220,30 @@ public class PillInteraction : MonoBehaviour
         onComplete?.Invoke();
     }
 
-    private void ResetPlayerSizes()
+    private void ResetPlayerSizesAndPills()
     {
-       // Reset both players to their original scales and positions
-       player1.localScale = originalScalePlayer1;
-       AdjustVerticalPosition(player1, originalPosPlayer1, false);
+        player1.localScale = originalScalePlayer1;
+        AdjustVerticalPosition(player1, originalPosPlayer1, false);
 
-       player2.localScale = originalScalePlayer2;
-       AdjustVerticalPosition(player2, originalPosPlayer2, false);
-   }
+        player2.localScale = originalScalePlayer2;
+        AdjustVerticalPosition(player2, originalPosPlayer2, false);
 
-   private void SetPillInactive(Image pill)
-   {
-       pill.color = grayColor;
-   }
+        SetPillActive(pill1);
+        SetPillActive(pill2);
+    }
 
-   private void SetPillActive(Image pill)
-   {
-       pill.color = (pill == pill1) ? originalColorPill1 : originalColorPill2; 
-   }
+    private void SetPillInactive(Image pill)
+    {
+        pill.color = grayColor;
+    }
+
+    private void SetPillActive(Image pill)
+    {
+        pill.color = (pill == pill1) ? originalColorPill1 : originalColorPill2;
+    }
+    public static void ResetAnimationFlag()
+    {
+        hasAnimationPlayed = false;
+    }
 }
+
