@@ -37979,7 +37979,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2337889952008270318, guid: d197793e14ccb6b45ac1405951257868, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.8
+      value: 6.75
       objectReference: {fileID: 0}
     - target: {fileID: 2337889952008270318, guid: d197793e14ccb6b45ac1405951257868, type: 3}
       propertyPath: m_LocalPosition.z
@@ -37987,7 +37987,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2337889952008270318, guid: d197793e14ccb6b45ac1405951257868, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2337889952008270318, guid: d197793e14ccb6b45ac1405951257868, type: 3}
       propertyPath: m_LocalRotation.x
@@ -37999,7 +37999,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2337889952008270318, guid: d197793e14ccb6b45ac1405951257868, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2337889952008270318, guid: d197793e14ccb6b45ac1405951257868, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -38011,7 +38011,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2337889952008270318, guid: d197793e14ccb6b45ac1405951257868, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 180
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -40220,7 +40220,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5474352436619581800, guid: 091b1bfb61fe460458548aff625d1334, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 10
+      value: 9.25
       objectReference: {fileID: 0}
     - target: {fileID: 5474352436619581800, guid: 091b1bfb61fe460458548aff625d1334, type: 3}
       propertyPath: m_LocalPosition.z
@@ -41537,7 +41537,7 @@ Transform:
   m_GameObject: {fileID: 1767312129}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.9692307, y: -7, z: -10}
+  m_LocalPosition: {x: -12.444443, y: -7, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
