@@ -19,9 +19,12 @@ EditorBuildSettings:
     guid: 4db3eada8be755e4fbb3bd0f8ef4bdb5
   - enabled: 1
     path: Assets/Scenes/Level1.unity
-    guid: dd4f27cca98034b99950f57fe7afd2ec
+    guid: b54fd096448c04987910fc123dacbfff
   - enabled: 1
     path: Assets/Scenes/Level2.unity
+    guid: d4b1793194d30400eae9a80dc8723dfe
+  - enabled: 1
+    path: Assets/Scenes/Level3.unity
     guid: aca91f4e73cbb4b46a3c8ad551a5c141
   - enabled: 1
     path: Assets/Scenes/YouWin.unity

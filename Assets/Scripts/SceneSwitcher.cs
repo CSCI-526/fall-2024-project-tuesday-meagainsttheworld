@@ -7,7 +7,7 @@ public class SceneSwitcher : MonoBehaviour
 {
     public static string prevLevel = "Level0";
 
-    private static readonly int finalLevelNum = 2;
+    private static readonly int finalLevelNum = 3;
 
     void Start()
     {
