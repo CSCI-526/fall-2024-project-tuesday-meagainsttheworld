@@ -4,12 +4,12 @@ import csv
 import math
 
 def fetch_data_from_csv(file_path):
-    level_count = 3
+    level_count = 4
     data_points = [{} for _ in range(level_count)]
     with open(file_path, 'r') as csvfile:
         csvreader = csv.DictReader(csvfile)
         for row in csvreader:
-            if int(row['build']) < 5: continue
+            if int(row['build']) < 6: continue
             level_number = int(row['currLevel'][5])
             pillLocation = row['pillLocation']
             isStart = 1 if row['isStart'] == 'True' else 0
@@ -83,7 +83,7 @@ def apply_grid_painting(images, data_points, grid_size=(80, 45), max_intensity=2
     return images_with_grid
 
 if __name__ == "__main__":
-    image_files = ["images/level0.png", "images/level1.png", "images/level2.png"]  # Replace with paths to your images in 'data/' folder
+    image_files = ["images/level0.png", "images/level1.png", "images/level2.png","images/level3.png"]  # Replace with paths to your images in 'data/' folder
     images = [cv2.imread(file) for file in image_files]
 
     data_points = fetch_data_from_csv("data/analyticsSizeChangingPills.csv")

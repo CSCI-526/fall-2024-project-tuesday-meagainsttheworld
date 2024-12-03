@@ -10,7 +10,7 @@ def fetch_data_from_csv(file_path):
     with open(file_path, 'r') as csvfile:
         csvreader = csv.DictReader(csvfile)
         for row in csvreader:
-            if int(row['build']) < 5: continue
+            if int(row['build']) < 6: continue
             level_number = int(row['currLevel'][5])
             x = float(row['playerX'])
             y = float(row['playerY'])
@@ -25,7 +25,7 @@ def transform_coordinates(x, y, x_start=-32, y_start=-18, x_target=2560, y_targe
     return x_transformed, y_transformed
 
 def calculate_opacity(change_count):
-    return -math.log10(change_count) * 1.4 + 2.2
+    return -math.log10(change_count) * 2.1 + 2.2
 
 # Apply grid-based painting with red fill and borders based on death counts
 def apply_grid_painting(images, data_points, grid_size=(80, 45), max_intensity=255):
@@ -52,7 +52,7 @@ def apply_grid_painting(images, data_points, grid_size=(80, 45), max_intensity=2
         for row in range(grid_size[1]):
             for col in range(grid_size[0]):
                 change_count = grid_counts[row, col]
-                if change_count > 9:
+                if change_count > 3:
                     grid_opacity = calculate_opacity(change_count)
                     if grid_opacity >= 0:
                         fill_color = (int(max_intensity * grid_opacity), 255, int(max_intensity * grid_opacity))  # Green fill
@@ -67,7 +67,7 @@ def apply_grid_painting(images, data_points, grid_size=(80, 45), max_intensity=2
     return images_with_grid
 
 def count_avg_gravity(sessionIDCount,data_points):
-    level_count = 3
+    level_count = 4
     avg_gravity = np.zeros(level_count)
     for level_number in data_points:
         avg_gravity[level_number[0]] += 1
@@ -97,7 +97,7 @@ def draw_graph(avg_gravity):
     plt.show()
 
 if __name__ == "__main__":
-    image_files = ["images/level0.png", "images/level1.png", "images/level2.png"]  # Replace with paths to your images in 'data/' folder
+    image_files = ["images/level0.png", "images/level1.png", "images/level2.png","images/level3.png"]  # Replace with paths to your images in 'data/' folder
     images = [cv2.imread(file) for file in image_files]
 
     [data_points,sessionIDCount] = fetch_data_from_csv("data/analyticsGravityChangePosition.csv")

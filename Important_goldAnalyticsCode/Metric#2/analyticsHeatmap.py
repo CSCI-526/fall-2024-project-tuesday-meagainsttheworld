@@ -10,7 +10,7 @@ def fetch_data_from_csv(file_path):
         for row in csvreader:
             level_number = int(row['currLevel'][5])
             if level_number <= 2:
-                if int(row['build']) < 5: continue
+                if int(row['build']) < 6: continue
             x = float(row['playerX'])
             y = float(row['playerY'])
             waitTime = float(row['waitTime'])
@@ -24,9 +24,9 @@ def transform_coordinates(x, y, x_start=-32, y_start=-18, x_target=2560, y_targe
 
 def calculate_opacity(wait_count,i):
     if i > 0:
-        return -math.log10(wait_count) * 0.7 + 1.2
+        return -math.log10(wait_count) * 1.5 + 1.65
     else:
-        return -math.log10(wait_count) * 1.12 + 2.4
+        return -math.log10(wait_count) * 1.8 + 3.3
 
 def apply_grid_painting(images, data_points, grid_size=(80, 45), max_intensity=255):
     images_with_grid = []
