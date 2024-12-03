@@ -26,7 +26,6 @@ public class PowerupAnimation : MonoBehaviour
     private Color originalColorPill1;
     private Color originalColorPill2;
     private Color grayColor = Color.gray;
-    private bool isAnimationPlaying = false;
     public static bool hasAnimationPlayed = false;
 
     private void Awake()
@@ -46,7 +45,7 @@ public class PowerupAnimation : MonoBehaviour
 
     public void StartAnimation()
     {
-        if (!isAnimationPlaying && !hasAnimationPlayed)
+        if (!hasAnimationPlayed)
         {
             StartCoroutine(AnimationSequence());
         }
@@ -54,7 +53,6 @@ public class PowerupAnimation : MonoBehaviour
 
     private IEnumerator AnimationSequence()
     {
-        isAnimationPlaying = true;
         hasAnimationPlayed = true;
         Time.timeScale = 0f; // Freeze gameplay
 
@@ -67,8 +65,7 @@ public class PowerupAnimation : MonoBehaviour
 
         yield return StartCoroutine(InteractionSequence());
 
-        // Wait for close button to be clicked
-        yield return new WaitUntil(() => !isAnimationPlaying);
+        CloseAnimation();
     }
 
     private void CloseAnimation()
@@ -78,7 +75,6 @@ public class PowerupAnimation : MonoBehaviour
         closeButton.gameObject.SetActive(false);
         SetVisibility(false);
         Time.timeScale = 1f; // Unfreeze gameplay
-        isAnimationPlaying = false;
     }
 
     private IEnumerator ZoomInPanel()
@@ -113,15 +109,16 @@ public class PowerupAnimation : MonoBehaviour
     private IEnumerator InteractionSequence()
     {
         yield return MovePlayerToPillAndGrow(player1, pill1.rectTransform, true);
-        yield return new WaitForSecondsRealtime(4f);
+        yield return new WaitForSecondsRealtime(effectDuration);
         yield return BlinkPlayers();
         ResetPlayerSizesAndPills();
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         yield return MovePlayerToPillAndGrow(player2, pill2.rectTransform, false);
-        yield return new WaitForSecondsRealtime(4f);
+        yield return new WaitForSecondsRealtime(effectDuration);
         yield return BlinkPlayers();
         ResetPlayerSizesAndPills();
+        yield return new WaitForSecondsRealtime(0.5f);
     }
 
     private IEnumerator MovePlayerToPillAndGrow(RectTransform player, RectTransform pill, bool isGrowing)
